@@ -44,6 +44,7 @@ jQuery(document).ready(function() {
     /* Templates */
     var template__item = document.getElementById('wpulivesearch_results_item').innerHTML,
         template__counter = document.getElementById('wpulivesearch_results_counter').innerHTML,
+        template__noresults = document.getElementById('wpulivesearch_results_noresults').innerHTML,
         template__before = document.getElementById('wpulivesearch_results_before').innerHTML,
         template__after = document.getElementById('wpulivesearch_results_after').innerHTML;
 
@@ -62,19 +63,46 @@ jQuery(document).ready(function() {
 
     function live_search(e) {
         /* Clean value */
-        var _fulltext_value = wpulivesearch_clean_value($searchbox.value);
+        var _fulltext_value = wpulivesearch_clean_value($searchbox.value),
+            _minimal_fulltext_value = parseInt(wpulivesearch_settings.minimal_fulltext_value, 10);
 
         /* Check each item */
-        var _results = [];
+        var _results = [],
+            _hasFullTextValue = false,
+            _hasFullText,
+            _hasFilters;
+
+        _hasFullTextValue = _fulltext_value.length > _minimal_fulltext_value;
+
         for (var i = 0, len = wpulivesearch_datas.length; i < len; i++) {
+
             /* Full text search */
-            if (_fulltext_value.length > 2 && wpulivesearch_fulltext_search(_fulltext_value, wpulivesearch_datas[i])) {
+            _hasFullText = false;
+            if (_hasFullTextValue && wpulivesearch_fulltext_search(_fulltext_value, wpulivesearch_datas[i])) {
                 _results[i] = wpulivesearch_datas[i];
+                _hasFullText = true;
             }
 
             /* Variable search */
+            _hasFilters = false;
             if (wpulivesearch_filters_search($filters, wpulivesearch_datas[i])) {
                 _results[i] = wpulivesearch_datas[i];
+                _hasFilters = true;
+            }
+
+            if (wpulivesearch_settings.fulltext_and_filters && typeof _results[i] !== 'undefined') {
+
+                /* Filters are filled but an invalid text is set */
+                if (_hasFilters && _hasFullTextValue && !_hasFullText) {
+                    delete _results[i];
+                    continue;
+                }
+
+                /* Filters are not ok */
+                if (!_hasFilters) {
+                    delete _results[i];
+                    continue;
+                }
             }
         }
 
@@ -90,8 +118,14 @@ jQuery(document).ready(function() {
             count: _counter
         });
 
+        _html = _counter_html + template__before + _html + template__after;
+
+        if (_counter == 0) {
+            _html = template__noresults;
+        }
+
         /* Build template */
-        $results_container.innerHTML = _counter_html + template__before + _html + template__after;
+        $results_container.innerHTML = _html;
     }
 });
 
@@ -101,7 +135,6 @@ jQuery(document).ready(function() {
 
 /* Search fulltext */
 function wpulivesearch_fulltext_search(_val, _item) {
-    return false;
     'use strict';
     for (var _key in _item.fulltext) {
         if (_item.fulltext[_key].indexOf(_val) > -1) {
@@ -114,7 +147,7 @@ function wpulivesearch_fulltext_search(_val, _item) {
 /* Search filters */
 function wpulivesearch_filters_search($filters, _item) {
     'use strict';
-    var has_filter = false,
+    var has_filter,
         tmp_value,
         tmp_key,
         i,
@@ -124,7 +157,7 @@ function wpulivesearch_filters_search($filters, _item) {
 
     for (i = 0, len = $filters.length; i < len; i++) {
         tmp_value = $filters[i].options[$filters[i].selectedIndex].value;
-        if (!tmp_value) {
+        if (!tmp_value || tmp_value == '') {
             continue;
         }
         tmp_key = $filters[i].id;
@@ -139,6 +172,11 @@ function wpulivesearch_filters_search($filters, _item) {
             return false;
         }
 
+        has_filter = true;
+    }
+
+    /* No filter was used : treat value as ok */
+    if (typeof has_filter !== 'boolean') {
         has_filter = true;
     }
 

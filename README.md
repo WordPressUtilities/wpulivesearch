@@ -43,9 +43,11 @@ do_action('wpulivesearch_form', $datas, $filters, $templates);
 
 ## TODO
 
-* Option for an inclusive search between TEXT & SELECT.
 * Disable filters option values without results.
-* Text no results.
-* FullText search too short.
-* Config FullText length.
 * Pager for results.
+* Relevance counter ( fulltext : full words ? )
+* Relevance counter ( number of selectors )
+* Selectors : multiple values ( INCL & EXCL )
+* Moar filters & hooks.
+* Add autoupdater.
+* Add admin settings.
