@@ -4,6 +4,10 @@ jQuery(document).ready(function() {
 
     'use strict';
 
+    if(typeof wpulivesearch_datas === 'undefined'){
+        return;
+    }
+
     /* Clean datas */
     (function() {
         var i, len, _filter, _filter_id;
