@@ -1,10 +1,10 @@
-/* globals jQuery, wpulivesearch_datas, wpulivesearch_filters */
+/* globals jQuery, wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_settings */
 
 jQuery(document).ready(function() {
 
     'use strict';
 
-    if(typeof wpulivesearch_datas === 'undefined'){
+    if (typeof wpulivesearch_datas === 'undefined') {
         return;
     }
 
@@ -61,11 +61,11 @@ jQuery(document).ready(function() {
     $searchbox.addEventListener('keyup', live_search, 1);
 
     /* Reset */
-    $searchform.addEventListener('reset', function(e) {
+    $searchform.addEventListener('reset', function() {
         $results_container.innerHTML = '';
     }, 1);
 
-    function live_search(e) {
+    function live_search() {
         /* Clean value */
         var _fulltext_value = wpulivesearch_clean_value($searchbox.value),
             _minimal_fulltext_value = parseInt(wpulivesearch_settings.minimal_fulltext_value, 10);
@@ -113,25 +113,165 @@ jQuery(document).ready(function() {
         /* Build response */
         var _html = '',
             _counter = 0;
-        for (var _result in _results) {
-            _counter++;
-            _html += wpulivesearch_get_filled_template(template__item, _results[_result]);
+
+        var _per_page = wpulivesearch_settings.results_per_page,
+            _nb_pages = 0,
+            _current_count = 0;
+
+        if (_results.length) {
+            _html += wpulivesearch_get_filled_template(template__before, {
+                page_nb: 0
+            });
+            for (var _result in _results) {
+                if (_counter > 0 && _current_count % _per_page === 0) {
+                    _nb_pages++;
+                    _current_count = 0;
+                    _html += template__after;
+                    _html += wpulivesearch_get_filled_template(template__before, {
+                        page_nb: _nb_pages
+                    });
+                }
+                _html += wpulivesearch_get_filled_template(template__item, _results[_result]);
+                _counter++;
+                _current_count++;
+            }
+            _html += template__after;
         }
 
         var _counter_html = wpulivesearch_get_filled_template(template__counter, {
             count: _counter
         });
 
-        _html = _counter_html + template__before + _html + template__after;
+        _html = _counter_html + _html;
 
-        if (_counter == 0) {
+        if (_counter === 0) {
             _html = template__noresults;
         }
 
         /* Build template */
         $results_container.innerHTML = _html;
+
+        /* Set pager */
+        if (_nb_pages > 0) {
+
+            wpulivesearch_create_pager($results_container, _nb_pages);
+
+            /* Create pages */
+            wpulivesearch_lazyload_items($results_container, 0);
+
+            /* Set page 1 */
+        }
+        else {
+            /* Trigger lazyload on page 0 */
+            wpulivesearch_lazyload_items($results_container, 0);
+        }
     }
 });
+
+/* ----------------------------------------------------------
+  Pager
+---------------------------------------------------------- */
+
+function wpulivesearch_create_pager($wrapper, _nb_pages) {
+    'use strict';
+
+    /* Build pager */
+    var $pager = document.createElement('DIV'),
+        $tmpPager;
+
+    $pager.classList.add('wpulivesearch-pager');
+
+    for (var i = 0; i <= _nb_pages; i++) {
+        /* Create link */
+        $tmpPager = document.createElement('A');
+        $tmpPager.innerHTML = (i + 1);
+        if (i === 0) {
+            $tmpPager.classList.add('current');
+        }
+        $tmpPager.setAttribute('href', '#');
+        $tmpPager.setAttribute('data-page', i);
+
+        /* Set click event to item */
+        $tmpPager.addEventListener('click', wpulivesearch_pager_clickevent, 1);
+
+        /* Add pager item */
+        $pager.appendChild($tmpPager);
+    }
+
+    $wrapper.appendChild($pager);
+
+    /* Trigger lazyload */
+    wpulivesearch_goto_page(0);
+
+}
+
+/* Events
+-------------------------- */
+
+function wpulivesearch_pager_clickevent(e) {
+    e.preventDefault();
+    wpulivesearch_set_pager_current(this);
+    wpulivesearch_goto_page(this.getAttribute('data-page'));
+}
+
+function wpulivesearch_set_pager_current($item, page_nb) {
+    'use strict';
+
+    var $parent = $item.parentNode,
+        $pages = $parent.children;
+
+    /* Set current pager */
+    for (var i = 0, len = $pages.length; i < len; i++) {
+        if (i == page_nb) {
+            $pages[i].classList.add('current');
+        }
+        else {
+            $pages[i].classList.remove('current');
+        }
+    }
+}
+
+function wpulivesearch_goto_page(page_nb) {
+    'use strict';
+
+    var $page = document.querySelector('[data-livepagenb="' + page_nb + '"]'),
+        $pages = document.querySelectorAll('[data-livepagenb]');
+
+    for (var i = 0, len = $pages.length; i < len; i++) {
+        $pages[i].style.display = 'none';
+    }
+
+    $page.setAttribute('style', '');
+
+    wpulivesearch_lazyload_items($page.parentNode, page_nb);
+}
+
+/* Lazyload
+-------------------------- */
+
+function wpulivesearch_lazyload_item($item) {
+    'use strict';
+
+    if ($item.getAttribute('data-src')) {
+        $item.setAttribute('src', $item.getAttribute('data-src'));
+        $item.removeAttribute('data-src');
+    }
+    if ($item.getAttribute('data-bgsrc')) {
+        $item.style.backgroundImage = 'url(' + $item.getAttribute('data-bgsrc') + ')';
+        $item.removeAttribute('data-bgsrc');
+    }
+}
+
+function wpulivesearch_lazyload_items($wrapper, page_nb) {
+    'use strict';
+
+    var $lazyLoadItems = $wrapper.querySelectorAll('[data-livepagenb="' + page_nb + '"] [data-src]');
+
+    /* Load each item */
+    for (var i = 0, len = $lazyLoadItems.length; i < len; i++) {
+        wpulivesearch_lazyload_item($lazyLoadItems[i]);
+    }
+}
 
 /* ----------------------------------------------------------
   Search methods
@@ -192,6 +332,7 @@ function wpulivesearch_filters_search($filters, _item) {
 ---------------------------------------------------------- */
 
 function wpulivesearch_get_filled_template(tpl, values) {
+    'use strict';
     var _tmp_result_html = tpl;
     for (var _value in values) {
         _tmp_result_html = _tmp_result_html.replace('{{' + _value + '}}', values[_value]);

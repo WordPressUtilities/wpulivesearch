@@ -44,7 +44,6 @@ do_action('wpulivesearch_form', $datas, $filters, $templates);
 ## TODO
 
 * Disable filters option values without results.
-* Pager for results.
 * Relevance counter ( fulltext : full words ? )
 * Relevance counter ( number of selectors )
 * Selectors : multiple values ( INCL & EXCL )

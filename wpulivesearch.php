@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.2.1
+Version: 0.3.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,9 +11,10 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.2.1';
+    private $plugin_version = '0.3.0';
     private $settings = array(
         'fulltext_and_filters' => true,
+        'results_per_page' => 999,
         'minimal_fulltext_value' => 0
     );
 
@@ -25,13 +26,13 @@ class WPULiveSearch {
 
     public function plugins_loaded() {
         load_plugin_textdomain('wpulivesearch', false, dirname(plugin_basename(__FILE__)) . '/lang/');
-
     }
 
     public function wp_enqueue_scripts() {
         wp_register_script('wpulivesearch_front', plugins_url('assets/front.js', __FILE__), 'jquery', $this->plugin_version, true);
         wp_localize_script('wpulivesearch_front', 'wpulivesearch_settings', array(
             'fulltext_and_filters' => $this->settings['fulltext_and_filters'] ? 1 : 0,
+            'results_per_page' => $this->settings['results_per_page'],
             'minimal_fulltext_value' => $this->settings['minimal_fulltext_value'],
             'plugin_version' => $this->plugin_version
         ));
@@ -101,7 +102,7 @@ class WPULiveSearch {
         $default_templates = array(
             'noresults' => '<div class="wpulivesearch-noresults">' . __('No results for this query, sorry', 'wpulivesearch') . '</div>',
             'counter' => '<div class="wpulivesearch-count">' . str_replace('%s', '{{count}}', __('%s result(s)', 'wpulivesearch')) . '</div>',
-            'before' => '<ul class="wpulivesearch-list">',
+            'before' => '<ul data-livepagenb="{{page_nb}}" class="wpulivesearch-list">',
             'after' => '</ul>',
             'item' => '<li class="wpulivesearch-item">{{name}}</li>'
         );
