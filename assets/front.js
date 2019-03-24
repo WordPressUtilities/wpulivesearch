@@ -61,23 +61,41 @@ jQuery(document).ready(function() {
     $searchbox.addEventListener('keyup', live_search, 1);
 
     /* Reset */
-    $searchform.addEventListener('reset', function() {
+    $searchform.addEventListener('reset', clear_search, 1);
+
+    function clear_search(){
         $results_container.innerHTML = '';
-    }, 1);
+    }
 
     function live_search() {
         /* Clean value */
         var _fulltext_value = wpulivesearch_clean_value($searchbox.value),
             _minimal_fulltext_value = parseInt(wpulivesearch_settings.minimal_fulltext_value, 10);
 
-        /* Check each item */
         var _results = [],
-            _hasFullTextValue = false,
+            _hasFullTextValue = _fulltext_value.length > _minimal_fulltext_value,
+            _hasFilterValue = false,
+            _filtersValues = [],
             _hasFullText,
             _hasFilters;
 
-        _hasFullTextValue = _fulltext_value.length > _minimal_fulltext_value;
+        /* Extract filters values */
+        for (i = 0, len = $filters.length; i < len; i++) {
+            _filtersValues[i] = {
+                value: $filters[i].options[$filters[i].selectedIndex].value,
+                id: $filters[i]
+            };
+            if (_filtersValues[i].value && _filtersValues[i].value != '') {
+                _hasFilterValue = true;
+            }
+        }
 
+        if (!_hasFilterValue && !_hasFullTextValue) {
+            clear_search();
+            return;
+        }
+
+        /* Check each item */
         for (var i = 0, len = wpulivesearch_datas.length; i < len; i++) {
 
             /* Full text search */
@@ -89,7 +107,7 @@ jQuery(document).ready(function() {
 
             /* Variable search */
             _hasFilters = false;
-            if (wpulivesearch_filters_search($filters, wpulivesearch_datas[i])) {
+            if (wpulivesearch_filters_search(_filtersValues, wpulivesearch_datas[i])) {
                 _results[i] = wpulivesearch_datas[i];
                 _hasFilters = true;
             }
@@ -289,7 +307,7 @@ function wpulivesearch_fulltext_search(_val, _item) {
 }
 
 /* Search filters */
-function wpulivesearch_filters_search($filters, _item) {
+function wpulivesearch_filters_search(_filtersValues, _item) {
     'use strict';
     var has_filter,
         tmp_value,
@@ -299,12 +317,12 @@ function wpulivesearch_filters_search($filters, _item) {
 
     /* Extract filter values */
 
-    for (i = 0, len = $filters.length; i < len; i++) {
-        tmp_value = $filters[i].options[$filters[i].selectedIndex].value;
+    for (i = 0, len = _filtersValues.length; i < len; i++) {
+        tmp_value = _filtersValues[i].value;
         if (!tmp_value || tmp_value == '') {
             continue;
         }
-        tmp_key = $filters[i].id;
+        tmp_key = _filtersValues[i].id;
 
         /* Item dont have the key : invalid / false */
         if (!_item.filters.hasOwnProperty(tmp_key)) {

@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.3.1
+Version: 0.3.2
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,11 +11,11 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.3.1';
+    private $plugin_version = '0.3.2';
     private $settings = array(
         'fulltext_and_filters' => true,
         'results_per_page' => 999,
-        'minimal_fulltext_value' => 0
+        'minimal_fulltext_value' => 1
     );
 
     public function __construct() {
