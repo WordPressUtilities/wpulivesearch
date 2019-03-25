@@ -10,8 +10,18 @@ jQuery(document).ready(function() {
 
     /* Clean datas */
     (function() {
-        var i, len, _filter, _filter_id;
+        var i, len, ii, len2, _filter, _filter_id, _raw_data;
         for (i = 0, len = wpulivesearch_datas.length; i < len; i++) {
+
+            /* Reimplement keys */
+            _raw_data = wpulivesearch_datas[i];
+            wpulivesearch_datas[i] = {};
+
+            for (ii = 0, len2 = _raw_data.length; ii < len; ii++) {
+                wpulivesearch_datas[i][wpulivesearch_datas_keys[ii]] = _raw_data[ii];
+            }
+
+            /* Load */
             wpulivesearch_datas[i].fulltext = {};
             wpulivesearch_datas[i].filters = {};
 
@@ -63,7 +73,7 @@ jQuery(document).ready(function() {
     /* Reset */
     $searchform.addEventListener('reset', clear_search, 1);
 
-    function clear_search(){
+    function clear_search() {
         $results_container.innerHTML = '';
     }
 
@@ -83,7 +93,7 @@ jQuery(document).ready(function() {
         for (i = 0, len = $filters.length; i < len; i++) {
             _filtersValues[i] = {
                 value: $filters[i].options[$filters[i].selectedIndex].value,
-                id: $filters[i]
+                id: $filters[i].id
             };
             if (_filtersValues[i].value && _filtersValues[i].value != '') {
                 _hasFilterValue = true;
@@ -316,7 +326,6 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
         len;
 
     /* Extract filter values */
-
     for (i = 0, len = _filtersValues.length; i < len; i++) {
         tmp_value = _filtersValues[i].value;
         if (!tmp_value || tmp_value == '') {

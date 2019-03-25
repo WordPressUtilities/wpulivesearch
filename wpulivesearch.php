@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.3.2
+Version: 0.3.3
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.3.2';
+    private $plugin_version = '0.3.3';
     private $settings = array(
         'fulltext_and_filters' => true,
         'results_per_page' => 999,
@@ -49,10 +49,12 @@ class WPULiveSearch {
         }
 
         $filters = $this->build_filters($filters);
+        $new_datas = $this->control_datas($datas);
 
         echo '<script>';
         echo 'var wpulivesearch_filters=' . json_encode($filters) . ';';
-        echo 'var wpulivesearch_datas=' . json_encode($datas) . ';';
+        echo 'var wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
+        echo 'var wpulivesearch_datas=' . json_encode($new_datas['values']) . ';';
         echo '</script>';
         echo '<form id="form_wpulivesearch" action="#" method="post">';
         echo '<div>';
@@ -72,6 +74,28 @@ class WPULiveSearch {
         echo '<div id="wpulivesearch_results"></div>';
         $this->display_templates($templates);
 
+    }
+
+    public function control_datas($_datas) {
+        $keys = array();
+        $datas = array();
+
+        foreach ($_datas as $_data) {
+            $_data = get_object_vars($_data);
+            if (empty($_keys)) {
+                $keys = array_keys($_data);
+            }
+            $_tmp_data = array();
+            foreach ($_data as $key => $var) {
+                $_tmp_data[] = $var;
+            }
+            $datas[] = $_tmp_data;
+        }
+
+        return array(
+            'keys' => $keys,
+            'values' => $datas
+        );
     }
 
     public function build_filters($filters) {
