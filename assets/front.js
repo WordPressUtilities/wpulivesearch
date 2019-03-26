@@ -1,6 +1,6 @@
 /* globals jQuery, wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_settings */
 
-jQuery(document).ready(function() {
+jQuery(document).on('wpulivesearch_datas_ready', function() {
 
     'use strict';
 
@@ -385,4 +385,17 @@ function wpulivesearch_clean_value(_val) {
     _val = _val.replace(new RegExp(/[ùúûü]/g), "u");
     _val = _val.replace(new RegExp(/[ýÿ]/g), "y");
     return _val;
+}
+
+function wpulivesearch_async_load(src) {
+    var d = document,
+        t = 'script',
+        o = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+
+    o.onload = function() {
+        jQuery(document).trigger('wpulivesearch_datas_ready');
+    };
+    o.src = src;
+    s.parentNode.insertBefore(o, s);
 }

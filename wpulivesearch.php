@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.3.3
+Version: 0.3.4
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,9 +11,10 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.3.3';
+    private $plugin_version = '0.3.4';
     private $settings = array(
         'fulltext_and_filters' => true,
+        'load_datas_in_file' => false,
         'results_per_page' => 999,
         'minimal_fulltext_value' => 1
     );
@@ -51,10 +52,29 @@ class WPULiveSearch {
         $filters = $this->build_filters($filters);
         $new_datas = $this->control_datas($datas);
 
+        $wpulivesearch_datas = json_encode($new_datas['values']);
+
+        $wpulivesearch_datas_js = 'var wpulivesearch_datas=' . $wpulivesearch_datas . ';';
+
+        /* Load datas from an external file */
+        if ($this->settings['load_datas_in_file']) {
+            $wpulivesearch_datas_id = md5($wpulivesearch_datas);
+            $wpulivesearch_datas_file_url = $wpulivesearch_datas_id . '.js';
+            $wp_upload_dir = wp_upload_dir();
+            $file = $wp_upload_dir['path'] . '/' . $wpulivesearch_datas_file_url;
+            if (!file_exists($file)) {
+                file_put_contents($file, $wpulivesearch_datas_js);
+            }
+            echo '<script>jQuery(document).ready(function($) {wpulivesearch_async_load("' . $wp_upload_dir['url'] . '/' . $wpulivesearch_datas_file_url . '")});</script>';
+        } else {
+            /* Display datas */
+            echo '<script>' . $wpulivesearch_datas_js . '</script>';
+            echo '<script>jQuery(document).ready(function(){jQuery(document).trigger("wpulivesearch_datas_ready");});</script>';
+        }
+
         echo '<script>';
         echo 'var wpulivesearch_filters=' . json_encode($filters) . ';';
         echo 'var wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
-        echo 'var wpulivesearch_datas=' . json_encode($new_datas['values']) . ';';
         echo '</script>';
         echo '<form id="form_wpulivesearch" action="#" method="post">';
         echo '<div>';
