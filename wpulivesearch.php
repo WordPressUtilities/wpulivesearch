@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.3.4
+Version: 0.3.5
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.3.4';
+    private $plugin_version = '0.3.5';
     private $settings = array(
         'fulltext_and_filters' => true,
         'load_datas_in_file' => false,
@@ -77,19 +77,21 @@ class WPULiveSearch {
         echo 'var wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
         echo '</script>';
         echo '<form id="form_wpulivesearch" action="#" method="post">';
-        echo '<div>';
-        echo '<label for="wpulivesearch">' . __('Search', 'wpulivesearch') . '</label>';
-        echo '<input placeholder="' . __('Search', 'wpulivesearch') . '" class="wpulivesearch-search" id="wpulivesearch" type="text" name="search" value="" />';
+        echo '<div class="wpulivesearch-search">';
+        echo '<label for="wpulivesearch">' . apply_filters('wpulivesearch_text_search_label', __('Search', 'wpulivesearch')) . '</label>';
+        echo '<input placeholder="' . apply_filters('wpulivesearch_text_search_placeholder', __('Search', 'wpulivesearch')) . '" class="wpulivesearch-search" id="wpulivesearch" type="text" name="search" value="" />';
         echo '</div>';
+        echo '<div class="wpulivesearch-filters">';
         foreach ($filters as $key => $value) {
             echo '<select class="wpulivesearch-filter" name="' . $key . '" id="' . $key . '">';
-            echo '<option value="">' . $key . '</option>';
+            echo '<option value="">' . ucfirst($key) . '</option>';
             foreach ($value['values'] as $_val_id => $_val_name) {
                 echo '<option value="' . $_val_id . '">' . $_val_name . '</option>';
             }
             echo '</select>';
         }
-        echo '<input type="reset" id="wpulivesearch-reset" name="wpulivesearch-reset" value="' . __('Reset', 'wpulivesearch') . '" />';
+        echo '</div>';
+        echo '<input type="reset" id="wpulivesearch-reset" name="wpulivesearch-reset" value="' . apply_filters('wpulivesearch_text_resetbutton_text', __('Reset', 'wpulivesearch')) . '" />';
         echo '</form>';
         echo '<div id="wpulivesearch_results"></div>';
         $this->display_templates($templates);

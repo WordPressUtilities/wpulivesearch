@@ -53,3 +53,4 @@ do_action('wpulivesearch_form', $datas, $filters, $templates);
 * Moar filters & hooks.
 * Add autoupdater.
 * Add admin settings.
+* Add default content for wrapper.
