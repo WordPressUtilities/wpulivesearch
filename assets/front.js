@@ -293,7 +293,7 @@ function wpulivesearch_lazyload_item($item) {
 function wpulivesearch_lazyload_items($wrapper, page_nb) {
     'use strict';
 
-    var $lazyLoadItems = $wrapper.querySelectorAll('[data-livepagenb="' + page_nb + '"] [data-src]');
+    var $lazyLoadItems = $wrapper.querySelector('[data-livepagenb="' + page_nb + '"]').querySelectorAll('[data-bgsrc],[data-src]');
 
     /* Load each item */
     for (var i = 0, len = $lazyLoadItems.length; i < len; i++) {
