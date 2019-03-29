@@ -44,13 +44,15 @@ do_action('wpulivesearch_form', $datas, $filters, $templates);
 ## TODO
 
 * Disable filters option values without results.
-* Multiple filters.
+* Multiple filters : display active values or number of selection in label.
 * Don't show all results if filters & search have default values.
 * Compress field name for filters.
 * Relevance counter ( fulltext : full words ? )
 * Relevance counter ( number of selectors )
-* Selectors : multiple values ( INCL & EXCL )
+* Sort results
 * Moar filters & hooks.
 * Add autoupdater.
 * Add admin settings.
 * Add default content for wrapper.
+* Inclusive or exclusive filters ( filter1 && filter2 / filter1 || filter 2)
+* Handle case where an item has multiple values for a key ( product_color: red&blue ).

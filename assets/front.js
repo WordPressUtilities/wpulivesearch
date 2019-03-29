@@ -53,6 +53,7 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
     var $searchform = document.getElementById('form_wpulivesearch'),
         $searchbox = document.getElementById('wpulivesearch'),
         $filters = document.querySelectorAll('.wpulivesearch-filter'),
+        $filters_multiples = document.querySelectorAll('.wpulivesearch-filter-multiple input[type="checkbox"]'),
         $results_container = document.getElementById('wpulivesearch_results');
 
     /* Templates */
@@ -67,6 +68,9 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
     /* Selectors events */
     for (var i = 0, len = $filters.length; i < len; i++) {
         $filters[i].addEventListener('change', live_search, 1);
+    }
+    for (var i2 = 0, len2 = $filters_multiples.length; i2 < len2; i2++) {
+        $filters_multiples[i2].addEventListener('change', live_search, 1);
     }
     $searchbox.addEventListener('keyup', live_search, 1);
 
@@ -87,15 +91,16 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
             _hasFilterValue = false,
             _filtersValues = [],
             _hasFullText,
-            _hasFilters;
+            _hasFilters,
+            i,
+            len;
 
-        /* Extract filters values */
-        for (i = 0, len = $filters.length; i < len; i++) {
-            _filtersValues[i] = {
-                value: $filters[i].options[$filters[i].selectedIndex].value,
-                id: $filters[i].id
-            };
-            if (_filtersValues[i].value && _filtersValues[i].value != '') {
+        /* Extract filter values */
+        _filtersValues = wpulivesearch_extract_values_from_filters($filters);
+
+        /* _filtersValues - i */
+        for (i = 0, len = _filtersValues.length; i < len; i++) {
+            if (_filtersValues[i].value && _filtersValues[i].value.length > 0) {
                 _hasFilterValue = true;
             }
         }
@@ -106,7 +111,7 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
         }
 
         /* Check each item */
-        for (var i = 0, len = wpulivesearch_datas.length; i < len; i++) {
+        for (i = 0, len = wpulivesearch_datas.length; i < len; i++) {
 
             /* Full text search */
             _hasFullText = false;
@@ -293,12 +298,48 @@ function wpulivesearch_lazyload_item($item) {
 function wpulivesearch_lazyload_items($wrapper, page_nb) {
     'use strict';
 
-    var $lazyLoadItems = $wrapper.querySelector('[data-livepagenb="' + page_nb + '"]').querySelectorAll('[data-bgsrc],[data-src]');
+    var $page = $wrapper.querySelector('[data-livepagenb="' + page_nb + '"]'),
+        $lazyLoadItems = $page ? $page.querySelectorAll('[data-bgsrc],[data-src]') : [];
 
     /* Load each item */
     for (var i = 0, len = $lazyLoadItems.length; i < len; i++) {
         wpulivesearch_lazyload_item($lazyLoadItems[i]);
     }
+}
+
+/* ----------------------------------------------------------
+  Extract values
+---------------------------------------------------------- */
+
+function wpulivesearch_extract_values_from_filters($filters) {
+    var i2, len2, _tmpValue, _checkList;
+
+    var _filtersValues = [];
+
+    for (var i = 0, len = $filters.length; i < len; i++) {
+        _tmpValue = [];
+        if ($filters[i].tagName == 'SELECT') {
+            if ($filters[i].options[$filters[i].selectedIndex].value) {
+                _tmpValue = [$filters[i].options[$filters[i].selectedIndex].value];
+            }
+        }
+        else {
+            _checkList = $filters[i].querySelectorAll('input[type="checkbox"]');
+            for (i2 = 0, len2 = _checkList.length; i2 < len2; i2++) {
+                if (_checkList[i2].checked) {
+                    _tmpValue.push(_checkList[i2].value);
+                }
+            }
+        }
+
+        _filtersValues[i] = {
+            value: _tmpValue,
+            id: $filters[i].getAttribute('data-key')
+        };
+
+    }
+
+    return _filtersValues;
 }
 
 /* ----------------------------------------------------------
@@ -320,26 +361,28 @@ function wpulivesearch_fulltext_search(_val, _item) {
 function wpulivesearch_filters_search(_filtersValues, _item) {
     'use strict';
     var has_filter,
-        tmp_value,
-        tmp_key,
+        filter_values,
+        filter_id,
         i,
-        len;
+        len,
+        i2,
+        len2;
 
     /* Extract filter values */
     for (i = 0, len = _filtersValues.length; i < len; i++) {
-        tmp_value = _filtersValues[i].value;
-        if (!tmp_value || tmp_value == '') {
+        filter_values = _filtersValues[i].value;
+        if (!filter_values || filter_values.length < 1) {
             continue;
         }
-        tmp_key = _filtersValues[i].id;
+        filter_id = _filtersValues[i].id;
 
         /* Item dont have the key : invalid / false */
-        if (!_item.filters.hasOwnProperty(tmp_key)) {
+        if (!_item.filters.hasOwnProperty(filter_id)) {
             return false;
         }
 
-        /* Value is different */
-        if (tmp_value != _item.filters[tmp_key]) {
+        /* Item value is not in the filter values */
+        if (filter_values.indexOf(_item.filters[filter_id]) < 0) {
             return false;
         }
 

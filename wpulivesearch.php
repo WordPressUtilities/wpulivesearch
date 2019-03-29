@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.3.6
+Version: 0.4.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.3.6';
+    private $plugin_version = '0.4.0';
     private $settings = array(
         'fulltext_and_filters' => true,
         'load_datas_in_file' => false,
@@ -81,21 +81,11 @@ class WPULiveSearch {
         echo '<label for="wpulivesearch">' . apply_filters('wpulivesearch_text_search_label', __('Search', 'wpulivesearch')) . '</label>';
         echo '<input placeholder="' . apply_filters('wpulivesearch_text_search_placeholder', __('Search', 'wpulivesearch')) . '" class="wpulivesearch-search" id="wpulivesearch" type="text" name="search" value="" />';
         echo '</div>';
-        echo '<div class="wpulivesearch-filters">';
-        foreach ($filters as $key => $value) {
-            echo '<select class="wpulivesearch-filter" name="' . $key . '" id="' . $key . '">';
-            echo '<option value="">' . ucfirst($key) . '</option>';
-            foreach ($value['values'] as $_val_id => $_val_name) {
-                echo '<option value="' . $_val_id . '">' . $_val_name . '</option>';
-            }
-            echo '</select>';
-        }
-        echo '</div>';
+        echo $this->display_filters($filters);
         echo '<input type="reset" id="wpulivesearch-reset" name="wpulivesearch-reset" value="' . apply_filters('wpulivesearch_text_resetbutton_text', __('Reset', 'wpulivesearch')) . '" />';
         echo '</form>';
         echo '<div id="wpulivesearch_results"></div>';
-        $this->display_templates($templates);
-
+        echo $this->display_templates($templates);
     }
 
     public function control_datas($_datas) {
@@ -144,11 +134,52 @@ class WPULiveSearch {
         return $filters;
     }
 
+    /* ----------------------------------------------------------
+      Display
+    ---------------------------------------------------------- */
+
+    /* Filters
+    -------------------------- */
+
+    public function display_filters($filters = array()) {
+        $html = '';
+        foreach ($filters as $key => $value) {
+            $html .= $this->display_filter($key, $value);
+        }
+        return '<div class="wpulivesearch-filters">' . $html . '</div>';
+    }
+
+    public function display_filter($key, $value) {
+        $html = '';
+        if (isset($value['multiple']) && $value['multiple']) {
+            $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-key="' . $key . '">';
+            $html .= '<label class="main-label">' . ucfirst($key) . '</label>';
+            $html .= '<div class="values">';
+            foreach ($value['values'] as $_val_id => $_val_name) {
+                $_id = 'filter-' . $key . $_val_id;
+                $html .= '<input id="' . $_id . '" type="checkbox" name="' . $key . '[]" value="' . $_val_id . '" /><label for="' . $_id . '">' . $_val_name . '</label>';
+            }
+            $html .= '</div>';
+            $html .= '</div>';
+
+        } else {
+            $html .= '<select class="wpulivesearch-filter wpulivesearch-filter--select" name="' . $key . '" data-key="' . $key . '">';
+            $html .= '<option value="">' . ucfirst($key) . '</option>';
+            foreach ($value['values'] as $_val_id => $_val_name) {
+                $html .= '<option value="' . $_val_id . '">' . $_val_name . '</option>';
+            }
+            $html .= '</select>';
+        }
+        return '<div class="wpulivesearch-filter__wrapper" data-multiple="'.($value['multiple'] ? '1' : '0').'">' . $html . '</div>';
+    }
+
+    /* Templates
+    -------------------------- */
+
     public function display_templates($templates = array()) {
         if (!is_array($templates)) {
             $templates = array();
         }
-
         $default_templates = array(
             'noresults' => '<div class="wpulivesearch-noresults">' . __('No results for this query, sorry', 'wpulivesearch') . '</div>',
             'counter' => '<div class="wpulivesearch-count">' . str_replace('%s', '{{count}}', __('%s result(s)', 'wpulivesearch')) . '</div>',
@@ -157,11 +188,13 @@ class WPULiveSearch {
             'item' => '<li class="wpulivesearch-item">{{name}}</li>'
         );
 
+        $html = '';
         foreach ($default_templates as $key => $value) {
             $value = isset($templates[$key]) ? $templates[$key] : $value;
-            echo '<script type="template/html" id="wpulivesearch_results_' . $key . '">' . $value . '</script>';
+            $html .= '<script type="template/html" id="wpulivesearch_results_' . $key . '">' . $value . '</script>';
         }
 
+        return $html;
     }
 }
 
