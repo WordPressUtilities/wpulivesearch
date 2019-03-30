@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+/* ----------------------------------------------------------
+  Inclusive search
+---------------------------------------------------------- */
+
+.wpulivesearch-filter--multiple .value[data-disabled="1"] {
+    display: none;
+}

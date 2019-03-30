@@ -1,4 +1,4 @@
-/* globals jQuery, wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_settings */
+/* globals jQuery, wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_datas_keys, wpulivesearch_settings */
 
 jQuery(document).on('wpulivesearch_datas_ready', function() {
 
@@ -79,6 +79,11 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
 
     function clear_search() {
         $results_container.innerHTML = '';
+        (function($filters) {
+            setTimeout(function() {
+                wpulivesearch_reset_active_filters($filters);
+            }, 100);
+        }($filters));
     }
 
     function live_search() {
@@ -151,6 +156,32 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
             _nb_pages = 0,
             _current_count = 0;
 
+        /* Extract filters available in results */
+        (function() {
+            var active_filters = {},
+                _filter,
+                _filter_key,
+                i,
+                tmp_result;
+            for (_filter_key in wpulivesearch_filters) {
+                active_filters[_filter_key] = [];
+            }
+
+            for (i in _results) {
+                for (_filter in _results[i].filters) {
+                    tmp_result = _results[i].filters[_filter].trim();
+                    if (!tmp_result) {
+                        continue;
+                    }
+                    if (active_filters[_filter].indexOf(tmp_result) < 0) {
+                        active_filters[_filter].push(tmp_result);
+                    }
+                }
+            }
+            wpulivesearch_set_active_filters(active_filters, $filters, $filters_multiples);
+        }());
+
+        /* Build HTML display */
         if (_results.length) {
             _html += wpulivesearch_get_filled_template(template__before, {
                 page_nb: 0
@@ -202,6 +233,70 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
 });
 
 /* ----------------------------------------------------------
+  Active filters
+---------------------------------------------------------- */
+
+function wpulivesearch_reset_active_filters($filters) {
+    'use strict';
+    for (var i = 0, len = $filters.length; i < len; i++) {
+        if ($filters[i].tagName == 'SELECT') {
+            wpulivesearch_set_active_filters__select([], $filters[i], true);
+        }
+        else {
+            wpulivesearch_set_active_filters__multiple([], $filters[i], true);
+        }
+    }
+}
+
+function wpulivesearch_set_active_filters(active_filters, $filters) {
+    'use strict';
+    var _active_filter = false;
+    for (var i = 0, len = $filters.length; i < len; i++) {
+        _active_filter = active_filters[$filters[i].getAttribute('data-key')];
+        if (typeof _active_filter == 'undefined') {
+            continue;
+        }
+        if ($filters[i].tagName == 'SELECT') {
+            wpulivesearch_set_active_filters__select(_active_filter, $filters[i], false);
+        }
+        else {
+            wpulivesearch_set_active_filters__multiple(_active_filter, $filters[i], false);
+        }
+    }
+}
+
+function wpulivesearch_set_active_filters__select(active_filters, $el, force) {
+    'use strict';
+    var op = $el.getElementsByTagName("option");
+    for (var i = 0; i < op.length; i++) {
+        if (wpulivesearch_settings.inclusive_search) {
+            op[i].disabled = force ? false : active_filters.indexOf(op[i].value) < 0;
+        }
+    }
+    if (force) {
+        $el.selectedIndex = 0;
+    }
+}
+
+function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) {
+    'use strict';
+    var $opts = $el.getElementsByTagName("input"),
+        _isHiddenValue,
+        _nbEnabled = 0;
+    for (var i = 0; i < $opts.length; i++) {
+        _isHiddenValue = force ? 0 : active_filters.indexOf($opts[i].value) < 0 ? 1 : 0;
+        $opts[i].parentNode.setAttribute('data-hidden', _isHiddenValue);
+        if (wpulivesearch_settings.inclusive_search) {
+            $opts[i].parentNode.setAttribute('data-disabled', _isHiddenValue);
+        }
+        if ($opts[i].checked) {
+            _nbEnabled++;
+        }
+    }
+    $el.querySelector('.main-label').innerHTML = $el.getAttribute('data-label') + (_nbEnabled > 0 ? ' (' + _nbEnabled + ')' : '');
+}
+
+/* ----------------------------------------------------------
   Pager
 ---------------------------------------------------------- */
 
@@ -242,9 +337,11 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
 -------------------------- */
 
 function wpulivesearch_pager_clickevent(e) {
+    'use strict';
     e.preventDefault();
-    wpulivesearch_set_pager_current(this);
-    wpulivesearch_goto_page(this.getAttribute('data-page'));
+    var page_nb = e.target.getAttribute('data-page');
+    wpulivesearch_set_pager_current(e.target, page_nb);
+    wpulivesearch_goto_page(page_nb);
 }
 
 function wpulivesearch_set_pager_current($item, page_nb) {
@@ -312,6 +409,7 @@ function wpulivesearch_lazyload_items($wrapper, page_nb) {
 ---------------------------------------------------------- */
 
 function wpulivesearch_extract_values_from_filters($filters) {
+    'use strict';
     var i2, len2, _tmpValue, _checkList;
 
     var _filtersValues = [];
@@ -364,9 +462,7 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
         filter_values,
         filter_id,
         i,
-        len,
-        i2,
-        len2;
+        len;
 
     /* Extract filter values */
     for (i = 0, len = _filtersValues.length; i < len; i++) {
@@ -431,6 +527,7 @@ function wpulivesearch_clean_value(_val) {
 }
 
 function wpulivesearch_async_load(src) {
+    'use strict';
     var d = document,
         t = 'script',
         o = d.createElement(t),

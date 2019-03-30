@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.4.0
+Version: 0.5.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,10 +11,11 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.4.0';
+    private $plugin_version = '0.5.0';
     private $settings = array(
         'fulltext_and_filters' => true,
         'load_datas_in_file' => false,
+        'inclusive_search' => false,
         'results_per_page' => 999,
         'minimal_fulltext_value' => 1
     );
@@ -34,14 +35,17 @@ class WPULiveSearch {
     }
 
     public function wp_enqueue_scripts() {
-        wp_register_script('wpulivesearch_front', plugins_url('assets/front.js', __FILE__), 'jquery', $this->plugin_version, true);
-        wp_localize_script('wpulivesearch_front', 'wpulivesearch_settings', array(
+        wp_register_style('wpulivesearch_front_css', plugins_url('assets/front.css', __FILE__), '', $this->plugin_version);
+        wp_enqueue_style('wpulivesearch_front_css');
+        wp_register_script('wpulivesearch_front_js', plugins_url('assets/front.js', __FILE__), 'jquery', $this->plugin_version, true);
+        wp_localize_script('wpulivesearch_front_js', 'wpulivesearch_settings', array(
             'fulltext_and_filters' => $this->settings['fulltext_and_filters'] ? 1 : 0,
             'results_per_page' => $this->settings['results_per_page'],
+            'inclusive_search' => $this->settings['inclusive_search'],
             'minimal_fulltext_value' => $this->settings['minimal_fulltext_value'],
             'plugin_version' => $this->plugin_version
         ));
-        wp_enqueue_script('wpulivesearch_front');
+        wp_enqueue_script('wpulivesearch_front_js');
     }
 
     public function display_form($datas = array(), $filters = array(), $templates = array()) {
@@ -152,12 +156,13 @@ class WPULiveSearch {
     public function display_filter($key, $value) {
         $html = '';
         if (isset($value['multiple']) && $value['multiple']) {
-            $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-key="' . $key . '">';
-            $html .= '<label class="main-label">' . ucfirst($key) . '</label>';
+            $_label = ucfirst($key);
+            $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
+            $html .= '<label class="main-label">' . $_label . '</label>';
             $html .= '<div class="values">';
             foreach ($value['values'] as $_val_id => $_val_name) {
                 $_id = 'filter-' . $key . $_val_id;
-                $html .= '<input id="' . $_id . '" type="checkbox" name="' . $key . '[]" value="' . $_val_id . '" /><label for="' . $_id . '">' . $_val_name . '</label>';
+                $html .= '<div class="value"><input id="' . $_id . '" type="checkbox" name="' . $key . '[]" value="' . $_val_id . '" /><label for="' . $_id . '">' . $_val_name . '</label></div>';
             }
             $html .= '</div>';
             $html .= '</div>';
@@ -170,7 +175,7 @@ class WPULiveSearch {
             }
             $html .= '</select>';
         }
-        return '<div class="wpulivesearch-filter__wrapper" data-multiple="'.($value['multiple'] ? '1' : '0').'">' . $html . '</div>';
+        return '<div class="wpulivesearch-filter__wrapper" data-multiple="' . ($value['multiple'] ? '1' : '0') . '">' . $html . '</div>';
     }
 
     /* Templates

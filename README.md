@@ -2,7 +2,7 @@
 
 * Live Search datas
 
-## Exemple : Search in a user list
+## Example : Search in a user list
 
 ```php
 <?php
@@ -34,25 +34,61 @@ $filters = array(
 /* Overrides some templates */
 $templates = array(
     'before' => '<ul class="my-custom-results">',
-    'after' => '</ul>',
+    'after' => '</ul>'
 );
 
 /* Display Form */
 do_action('wpulivesearch_form', $datas, $filters, $templates);
+
+```
+
+## How to : Custom settings
+
+```php
+add_filter('wpulivesearch_settings', 'testtest_wpulivesearch_settings', 10, 1);
+function testtest_wpulivesearch_settings($settings = array()) {
+    /* Fulltext and filters and linked */
+    $settings['fulltext_and_filters'] = true;
+    /* Load datas in a separate JS file : better performances if page is cached */
+    $settings['load_datas_in_file'] = false;
+    /* Paginate results */
+    $settings['results_per_page'] = 999;
+    /* Fulltext is not used if there is less characters than this value */
+    $settings['minimal_fulltext_value'] = 1;
+    /* Inclusive search hide all filters values non relevant to the search */
+    $settings['inclusive_search'] = false;
+    return $settings;
+}
+```
+
+## How to : show hidden filters (filters values non relevant) to the search
+
+```css
+.wpulivesearch-filter--multiple .value[data-hidden="1"] {
+    opacity: 0.60;
+}
 ```
 
 ## TODO
 
-* Disable filters option values without results.
-* Multiple filters : display active values or number of selection in label.
-* Don't show all results if filters & search have default values.
-* Compress field name for filters.
-* Relevance counter ( fulltext : full words ? )
-* Relevance counter ( number of selectors )
-* Sort results
 * Moar filters & hooks.
 * Add autoupdater.
 * Add admin settings.
 * Add default content for wrapper.
-* Inclusive or exclusive filters ( filter1 && filter2 / filter1 || filter 2)
+
+### Results
+
+* Don't show all results if filters & search have default values.
 * Handle case where an item has multiple values for a key ( product_color: red&blue ).
+* Relevance counter ( fulltext : full words ? ).
+* Relevance counter ( number of selectors ).
+* Sort results.
+
+### Filters
+
+* Build filters in JS.
+* Compress field name for filters.
+* Hide filters with no values.
+* Inclusive or exclusive filters ( filter1 && filter2 / filter1 || filter 2).
+* Keep filter value in URL.
+* Multiple filters : display active values or number of selection in label.
