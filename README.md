@@ -84,11 +84,19 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Relevance counter ( number of selectors ).
 * Sort results.
 
+#### Fulltext relevance :
+
+- 10 points : name contains string.
+- 5 points : filter name contains string.
+
+#### Filters relevance
+
+- 2 points : filter is active.
+
 ### Filters
 
 * Build filters in JS.
 * Compress field name for filters.
-* Hide filters with no values.
 * Inclusive or exclusive filters ( filter1 && filter2 / filter1 || filter 2).
 * Keep filter value in URL.
 * Multiple filters : display active values or number of selection in label.
