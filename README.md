@@ -75,6 +75,7 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Add autoupdater.
 * Add admin settings.
 * Add default content for wrapper.
+* Pager : prev / next & less pages.
 
 ### Results
 

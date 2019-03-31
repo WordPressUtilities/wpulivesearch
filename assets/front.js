@@ -157,29 +157,7 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
             _current_count = 0;
 
         /* Extract filters available in results */
-        (function() {
-            var active_filters = {},
-                _filter,
-                _filter_key,
-                i,
-                tmp_result;
-            for (_filter_key in wpulivesearch_filters) {
-                active_filters[_filter_key] = [];
-            }
-
-            for (i in _results) {
-                for (_filter in _results[i].filters) {
-                    tmp_result = _results[i].filters[_filter].trim();
-                    if (!tmp_result) {
-                        continue;
-                    }
-                    if (active_filters[_filter].indexOf(tmp_result) < 0) {
-                        active_filters[_filter].push(tmp_result);
-                    }
-                }
-            }
-            wpulivesearch_set_active_filters(active_filters, $filters, $filters_multiples);
-        }());
+        wpulivesearch_extract_active_filters(_results, $filters, $filters_multiples);
 
         /* Build HTML display */
         if (_results.length) {
@@ -217,24 +195,48 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
 
         /* Set pager */
         if (_nb_pages > 0) {
-
+            /* Create pager */
             wpulivesearch_create_pager($results_container, _nb_pages);
-
-            /* Create pages */
-            wpulivesearch_lazyload_items($results_container, 0);
-
-            /* Set page 1 */
         }
-        else {
-            /* Trigger lazyload on page 0 */
-            wpulivesearch_lazyload_items($results_container, 0);
-        }
+
+        /* Init lazyload on page 1 */
+        wpulivesearch_lazyload_items($results_container, 0);
     }
 });
 
 /* ----------------------------------------------------------
   Active filters
 ---------------------------------------------------------- */
+
+/* Sort
+-------------------------- */
+
+function wpulivesearch_extract_active_filters(_results, $filters, $filters_multiples) {
+    var active_filters = {},
+        _filter,
+        _filter_key,
+        i,
+        tmp_result;
+    for (_filter_key in wpulivesearch_filters) {
+        active_filters[_filter_key] = [];
+    }
+
+    for (i in _results) {
+        for (_filter in _results[i].filters) {
+            tmp_result = _results[i].filters[_filter].trim();
+            if (!tmp_result) {
+                continue;
+            }
+            if (active_filters[_filter].indexOf(tmp_result) < 0) {
+                active_filters[_filter].push(tmp_result);
+            }
+        }
+    }
+    wpulivesearch_set_active_filters(active_filters, $filters, $filters_multiples);
+}
+
+/* Reset
+-------------------------- */
 
 function wpulivesearch_reset_active_filters($filters) {
     'use strict';
@@ -247,6 +249,9 @@ function wpulivesearch_reset_active_filters($filters) {
         }
     }
 }
+
+/* Parse
+-------------------------- */
 
 function wpulivesearch_set_active_filters(active_filters, $filters) {
     'use strict';
@@ -305,30 +310,23 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
 
     /* Build pager */
     var $pager = document.createElement('DIV'),
+        _tmpHTML = '',
         $tmpPager;
 
     $pager.classList.add('wpulivesearch-pager');
 
     for (var i = 0; i <= _nb_pages; i++) {
         /* Create link */
-        $tmpPager = document.createElement('A');
-        $tmpPager.innerHTML = (i + 1);
-        if (i === 0) {
-            $tmpPager.classList.add('current');
-        }
-        $tmpPager.setAttribute('href', '#');
-        $tmpPager.setAttribute('data-page', i);
-
-        /* Set click event to item */
-        $tmpPager.addEventListener('click', wpulivesearch_pager_clickevent, 1);
-
-        /* Add pager item */
-        $pager.appendChild($tmpPager);
+        _tmpHTML += '<a href="#" data-page="' + i + '" ' + (i === 0 ? 'class="current"' : '') + '>' + (i + 1) + '</a>';
     }
+
+    $pager.innerHTML = _tmpHTML;
+
+    $pager.addEventListener('click', wpulivesearch_pager_clickevent, 1);
 
     $wrapper.appendChild($pager);
 
-    /* Trigger lazyload */
+    /* Trigger display page 1 */
     wpulivesearch_goto_page(0);
 
 }
@@ -338,6 +336,9 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
 
 function wpulivesearch_pager_clickevent(e) {
     'use strict';
+    if(e.target.tagName != 'A'){
+        return;
+    }
     e.preventDefault();
     var page_nb = e.target.getAttribute('data-page');
     wpulivesearch_set_pager_current(e.target, page_nb);
@@ -497,9 +498,8 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
   Templating
 ---------------------------------------------------------- */
 
-function wpulivesearch_get_filled_template(tpl, values) {
+function wpulivesearch_get_filled_template(_tmp_result_html, values) {
     'use strict';
-    var _tmp_result_html = tpl;
     for (var _value in values) {
         _tmp_result_html = _tmp_result_html.replace('{{' + _value + '}}', values[_value]);
     }
