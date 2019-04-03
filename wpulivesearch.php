@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.5.2
+Version: 0.5.3
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.5.2';
+    private $plugin_version = '0.5.3';
     private $settings = array(
         'fulltext_and_filters' => true,
         'load_datas_in_file' => false,
@@ -123,11 +123,13 @@ class WPULiveSearch {
             $values = get_terms($filter['taxonomy'], array(
                 'hide_empty' => false
             ));
-
             $filter['values'] = array();
             if (!is_wp_error($values)) {
                 foreach ($values as $value) {
-                    $filter['values'][$value->term_id] = $value->name;
+                    $filter['values'][] = array(
+                        'value' => $value->term_id,
+                        'label' => $value->name
+                    );
                 }
             }
 
@@ -155,24 +157,15 @@ class WPULiveSearch {
 
     public function display_filter($key, $value) {
         $html = '';
+        $_label = ucfirst($key);
         if (isset($value['multiple']) && $value['multiple']) {
-            $_label = ucfirst($key);
             $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
             $html .= '<label class="main-label">' . $_label . '</label>';
-            $html .= '<div class="values">';
-            foreach ($value['values'] as $_val_id => $_val_name) {
-                $_id = 'filter-' . $key . $_val_id;
-                $html .= '<div class="value"><input id="' . $_id . '" type="checkbox" name="' . $key . '[]" value="' . $_val_id . '" /><label for="' . $_id . '">' . $_val_name . '</label></div>';
-            }
-            $html .= '</div>';
             $html .= '</div>';
 
         } else {
             $html .= '<select class="wpulivesearch-filter wpulivesearch-filter--select" name="' . $key . '" data-key="' . $key . '">';
-            $html .= '<option value="">' . ucfirst($key) . '</option>';
-            foreach ($value['values'] as $_val_id => $_val_name) {
-                $html .= '<option value="' . $_val_id . '">' . $_val_name . '</option>';
-            }
+            $html .= '<option value="">' . $_label . '</option>';
             $html .= '</select>';
         }
         return '<div class="wpulivesearch-filter__wrapper" data-multiple="' . (isset($value['multiple']) && $value['multiple'] ? '1' : '0') . '">' . $html . '</div>';

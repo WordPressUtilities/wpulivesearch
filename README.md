@@ -96,7 +96,6 @@ function testtest_wpulivesearch_settings($settings = array()) {
 
 ### Filters
 
-* Build filters in JS.
 * Compress field name for filters.
 * Inclusive or exclusive filters ( filter1 && filter2 / filter1 || filter 2).
 * Keep filter value in URL.

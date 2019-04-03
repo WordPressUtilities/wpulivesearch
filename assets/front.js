@@ -10,20 +10,19 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
 
     /* Clean datas */
     (function() {
-        var i, len, ii, len2, _filter, _filter_id, _raw_data;
+        var i, len, ii, len2, _filter, _filter_id, _raw_data, _filter_key, _filter_item;
         for (i = 0, len = wpulivesearch_datas.length; i < len; i++) {
 
             /* Reimplement keys */
             _raw_data = wpulivesearch_datas[i];
-            wpulivesearch_datas[i] = {};
+            wpulivesearch_datas[i] = {
+                fulltext: {},
+                filters: {}
+            };
 
             for (ii = 0, len2 = _raw_data.length; ii < len; ii++) {
                 wpulivesearch_datas[i][wpulivesearch_datas_keys[ii]] = _raw_data[ii];
             }
-
-            /* Load */
-            wpulivesearch_datas[i].fulltext = {};
-            wpulivesearch_datas[i].filters = {};
 
             /* Clean values */
             wpulivesearch_datas[i].fulltext.name = wpulivesearch_clean_value(wpulivesearch_datas[i].name);
@@ -38,13 +37,20 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
                     continue;
                 }
                 for (_filter_id in wpulivesearch_filters[_filter].values) {
-                    if (wpulivesearch_datas[i][_filter] == _filter_id) {
-                        /* Replace value in item */
-                        wpulivesearch_datas[i][_filter] = wpulivesearch_filters[_filter].values[_filter_id];
-                        /* Replace value in fulltext */
-                        wpulivesearch_datas[i].fulltext[_filter] = wpulivesearch_clean_value(wpulivesearch_filters[_filter].values[_filter_id]);
-                    }
+                    replace_filters_values(_filter_id, wpulivesearch_filters[_filter].values);
                 }
+            }
+        }
+
+        /* Ensure values are correct in the search arrays */
+        function replace_filters_values(_id, _values) {
+            var _filter_item = _values[_id];
+            var _filter_key = _filter_item.value;
+            if (wpulivesearch_datas[i][_filter] == _filter_key) {
+                /* Replace value in item */
+                wpulivesearch_datas[i][_filter] = _filter_item.label;
+                /* Replace value in fulltext */
+                wpulivesearch_datas[i].fulltext[_filter] = wpulivesearch_clean_value(_filter_item.label);
             }
         }
     }());
@@ -62,6 +68,16 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
         template__noresults = document.getElementById('wpulivesearch_results_noresults').innerHTML,
         template__before = document.getElementById('wpulivesearch_results_before').innerHTML,
         template__after = document.getElementById('wpulivesearch_results_after').innerHTML;
+
+    /* Build filters */
+    (function() {
+        var _html = '',
+            _i = 0;
+        for (var i in wpulivesearch_filters) {
+            $filters[_i].innerHTML = $filters[_i].innerHTML + wpulivesearch_get_filter_html(i, wpulivesearch_filters[i]);
+            _i++;
+        }
+    }());
 
     /* Live Search event */
     $searchbox.addEventListener('keyup', live_search, 1);
@@ -336,7 +352,7 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
 
 function wpulivesearch_pager_clickevent(e) {
     'use strict';
-    if(e.target.tagName != 'A'){
+    if (e.target.tagName != 'A') {
         return;
     }
     e.preventDefault();
@@ -504,6 +520,41 @@ function wpulivesearch_get_filled_template(_tmp_result_html, values) {
         _tmp_result_html = _tmp_result_html.replace('{{' + _value + '}}', values[_value]);
     }
     return _tmp_result_html;
+}
+
+/* ----------------------------------------------------------
+  Build filter HTML content
+---------------------------------------------------------- */
+
+function wpulivesearch_get_filter_html(_key, _value) {
+    'use strict';
+    var _html = '';
+    var is_multiple = (_value.multiple == '1'),
+        _tmpValue,
+        _item_id,
+        _val;
+
+    if (is_multiple) {
+        _html += '<div class="values">';
+    }
+
+    /* Parse values */
+    for (_val in _value.values) {
+        _item_id = 'filter-' + _key + _value.values[_val].value;
+        if (is_multiple) {
+            _html += '<div class="value"><input id="' + _item_id + '" type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
+        }
+        else {
+            _html += '<option value="' + _value.values[_val].value + '">' + _value.values[_val].label + '</option>';
+        }
+    }
+
+    if (is_multiple) {
+        _html += '</div>';
+    }
+
+    /* Return full content */
+    return _html;
 }
 
 /* ----------------------------------------------------------
