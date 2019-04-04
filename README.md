@@ -57,6 +57,8 @@ function testtest_wpulivesearch_settings($settings = array()) {
     $settings['minimal_fulltext_value'] = 1;
     /* Inclusive search hide all filters values non relevant to the search */
     $settings['inclusive_search'] = false;
+    /* Display selected values in multiple selectors label */
+    $settings['view_selected_multiple_values'] = false;
     return $settings;
 }
 ```
@@ -99,4 +101,3 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Compress field name for filters.
 * Inclusive or exclusive filters ( filter1 && filter2 / filter1 || filter 2).
 * Keep filter value in URL.
-* Multiple filters : display active values or number of selection in label.

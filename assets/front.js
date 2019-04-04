@@ -301,20 +301,31 @@ function wpulivesearch_set_active_filters__select(active_filters, $el, force) {
 
 function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) {
     'use strict';
-    var $opts = $el.getElementsByTagName("input"),
+    var $opts = $el.querySelectorAll('input[type="checkbox"]'),
+        _displayLabel,
         _isHiddenValue,
+        _itemParent,
+        _visibleValues = [],
         _nbEnabled = 0;
     for (var i = 0; i < $opts.length; i++) {
+        _itemParent = $opts[i].parentNode;
         _isHiddenValue = force ? 0 : active_filters.indexOf($opts[i].value) < 0 ? 1 : 0;
-        $opts[i].parentNode.setAttribute('data-hidden', _isHiddenValue);
+        _itemParent.setAttribute('data-hidden', _isHiddenValue);
         if (wpulivesearch_settings.inclusive_search) {
-            $opts[i].parentNode.setAttribute('data-disabled', _isHiddenValue);
+            _itemParent.setAttribute('data-disabled', _isHiddenValue);
         }
         if ($opts[i].checked) {
             _nbEnabled++;
+            if (wpulivesearch_settings.view_selected_multiple_values) {
+                _visibleValues.push(_itemParent.querySelector('label').innerHTML);
+            }
         }
     }
-    $el.querySelector('.main-label').innerHTML = $el.getAttribute('data-label') + (_nbEnabled > 0 ? ' (' + _nbEnabled + ')' : '');
+    _displayLabel = (_nbEnabled > 0 ? ' (' + _nbEnabled + ')' : '');
+    if (wpulivesearch_settings.view_selected_multiple_values && _nbEnabled) {
+        _displayLabel = '(' + _visibleValues.join(',') + ')';
+    }
+    $el.querySelector('.main-label').innerHTML = $el.getAttribute('data-label') + ' ' + _displayLabel;
 }
 
 /* ----------------------------------------------------------
