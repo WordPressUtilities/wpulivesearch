@@ -78,6 +78,7 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Add admin settings.
 * Add default content for wrapper.
 * Pager : prev / next & less pages.
+* Handle multiple livesearch on the same page.
 
 ### Results
 

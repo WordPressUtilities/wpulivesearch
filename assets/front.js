@@ -64,6 +64,7 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
 
     /* Templates */
     var template__item = document.getElementById('wpulivesearch_results_item').innerHTML,
+        template__default = document.getElementById('wpulivesearch_results_default').innerHTML,
         template__counter = document.getElementById('wpulivesearch_results_counter').innerHTML,
         template__noresults = document.getElementById('wpulivesearch_results_noresults').innerHTML,
         template__before = document.getElementById('wpulivesearch_results_before').innerHTML,
@@ -93,8 +94,11 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
     /* Reset */
     $searchform.addEventListener('reset', clear_search, 1);
 
+    /* Default content */
+    $results_container.innerHTML = template__default;
+
     function clear_search() {
-        $results_container.innerHTML = '';
+        $results_container.innerHTML = template__default;
         (function($filters) {
             setTimeout(function() {
                 wpulivesearch_reset_active_filters($filters);
@@ -207,6 +211,9 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
         }
 
         /* Build template */
+        if (!_html) {
+            _html = template__default;
+        }
         $results_container.innerHTML = _html;
 
         /* Set pager */
