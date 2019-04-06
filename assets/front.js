@@ -344,17 +344,12 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
 
     /* Build pager */
     var $pager = document.createElement('DIV'),
-        _tmpHTML = '',
         $tmpPager;
 
     $pager.classList.add('wpulivesearch-pager');
+    $pager.setAttribute('data-nbpages', _nb_pages);
 
-    for (var i = 0; i <= _nb_pages; i++) {
-        /* Create link */
-        _tmpHTML += '<a href="#" data-page="' + i + '" ' + (i === 0 ? 'class="current"' : '') + '>' + (i + 1) + '</a>';
-    }
-
-    $pager.innerHTML = _tmpHTML;
+    wpulivesearch_set_pager_content($pager, 0);
 
     $pager.addEventListener('click', wpulivesearch_pager_clickevent, 1);
 
@@ -363,6 +358,42 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
     /* Trigger display page 1 */
     wpulivesearch_goto_page(0);
 
+}
+
+function wpulivesearch_set_pager_content($pager, _current) {
+    var _tmpHTML = '',
+        _nb_pages = parseInt($pager.getAttribute('data-nbpages'), 10),
+        _tmpHTMLBefore = '',
+        _tmpHTMLAfter = '',
+        _nb_start = 0,
+        _nb_max = 9,
+        _nb_end = _nb_pages + 1;
+
+    var _nb_display_before = Math.floor((_nb_max - 1) / 2);
+
+    if (_nb_max < _nb_pages) {
+        _nb_start = Math.max(0, _current - _nb_display_before);
+        _nb_end = Math.min(_nb_end, _nb_start + _nb_max);
+        if (_nb_start >= 1) {
+            _tmpHTMLBefore += '<a href="#" data-page="0">&lt;&lt;</a>';
+        }
+        if (_current > 0) {
+            _tmpHTMLBefore += '<a href="#" data-page="' + (_current - 1) + '">&lt;</a>';
+        }
+        if (_current < _nb_pages ) {
+            _tmpHTMLAfter += '<a href="#" data-page="' + (_current + 1) + '">&gt;</a>';
+        }
+        if (_nb_end < _nb_pages + 1) {
+            _tmpHTMLAfter += '<a href="#" data-page="' + _nb_pages + '">&gt;&gt;</a>';
+        }
+    }
+
+    for (var i = _nb_start; i < _nb_end; i++) {
+        /* Create link */
+        _tmpHTML += '<a href="#" data-page="' + i + '" ' + (i === _current ? 'class="current"' : '') + '>' + (i + 1) + '</a>';
+    }
+
+    $pager.innerHTML = _tmpHTMLBefore + _tmpHTML + _tmpHTMLAfter;
 }
 
 /* Events
@@ -374,8 +405,8 @@ function wpulivesearch_pager_clickevent(e) {
         return;
     }
     e.preventDefault();
-    var page_nb = e.target.getAttribute('data-page');
-    wpulivesearch_set_pager_current(e.target, page_nb);
+    var page_nb = parseInt(e.target.getAttribute('data-page'), 10);
+    wpulivesearch_set_pager_content(e.target.parentNode, page_nb);
     wpulivesearch_goto_page(page_nb);
 }
 
