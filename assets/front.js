@@ -366,7 +366,7 @@ function wpulivesearch_set_pager_content($pager, _current) {
         _tmpHTMLBefore = '',
         _tmpHTMLAfter = '',
         _nb_start = 0,
-        _nb_max = 9,
+        _nb_max = wpulivesearch_settings.nb_items_in_pager,
         _nb_end = _nb_pages + 1;
 
     var _nb_display_before = Math.floor((_nb_max - 1) / 2);
@@ -375,22 +375,22 @@ function wpulivesearch_set_pager_content($pager, _current) {
         _nb_start = Math.max(0, _current - _nb_display_before);
         _nb_end = Math.min(_nb_end, _nb_start + _nb_max);
         if (_nb_start >= 1) {
-            _tmpHTMLBefore += '<a href="#" data-page="0">&lt;&lt;</a>';
+            _tmpHTMLBefore += '<a href="#" class="first" data-page="0"><span>&lt;&lt;</span></a>';
         }
         if (_current > 0) {
-            _tmpHTMLBefore += '<a href="#" data-page="' + (_current - 1) + '">&lt;</a>';
+            _tmpHTMLBefore += '<a href="#" class="prev" data-page="' + (_current - 1) + '"><span>&lt;</span></a>';
         }
-        if (_current < _nb_pages ) {
-            _tmpHTMLAfter += '<a href="#" data-page="' + (_current + 1) + '">&gt;</a>';
+        if (_current < _nb_pages) {
+            _tmpHTMLAfter += '<a href="#" class="next" data-page="' + (_current + 1) + '"><span>&gt;</span></a>';
         }
         if (_nb_end < _nb_pages + 1) {
-            _tmpHTMLAfter += '<a href="#" data-page="' + _nb_pages + '">&gt;&gt;</a>';
+            _tmpHTMLAfter += '<a href="#" class="last" data-page="' + _nb_pages + '"><span>&gt;&gt;</span></a>';
         }
     }
 
     for (var i = _nb_start; i < _nb_end; i++) {
         /* Create link */
-        _tmpHTML += '<a href="#" data-page="' + i + '" ' + (i === _current ? 'class="current"' : '') + '>' + (i + 1) + '</a>';
+        _tmpHTML += '<a href="#" data-page="' + i + '" class="item ' + (i === _current ? ' current' : '') + '"><span>' + (i + 1) + '</span></a>';
     }
 
     $pager.innerHTML = _tmpHTMLBefore + _tmpHTML + _tmpHTMLAfter;

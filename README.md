@@ -53,6 +53,8 @@ function testtest_wpulivesearch_settings($settings = array()) {
     $settings['load_datas_in_file'] = false;
     /* Paginate results */
     $settings['results_per_page'] = 999;
+    /* Max number of page numbers visible at once in pager */
+    $settings['nb_items_in_pager'] = 9;
     /* Fulltext is not used if there is less characters than this value */
     $settings['minimal_fulltext_value'] = 1;
     /* Inclusive search hide all filters values non relevant to the search */
@@ -77,7 +79,7 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Add autoupdater.
 * Add admin settings.
 * Add default content for wrapper.
-* Pager : config for display (text, classname, number displayed)
+* Pager : config for display (text, classname)
 * Handle multiple livesearch on the same page.
 
 ### Results
