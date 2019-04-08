@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.5.7
+Version: 0.5.8
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.5.7';
+    private $plugin_version = '0.5.8';
     private $settings = array(
         'view_selected_multiple_values' => false,
         'fulltext_and_filters' => true,
@@ -184,6 +184,7 @@ class WPULiveSearch {
         }
         $default_templates = array(
             'default' => '',
+            'pager_item' => '<a href="#" class="{{class_name}}" data-page="{{page_nb}}"><span>{{content}}</span></a>',
             'noresults' => '<div class="wpulivesearch-noresults">' . __('No results for this query, sorry', 'wpulivesearch') . '</div>',
             'counter' => '<div class="wpulivesearch-count">' . str_replace('%s', '{{count}}', __('%s result(s)', 'wpulivesearch')) . '</div>',
             'before' => '<ul data-livepagenb="{{page_nb}}" class="wpulivesearch-list">',
@@ -191,13 +192,25 @@ class WPULiveSearch {
             'item' => '<li class="wpulivesearch-item">{{name}}</li>'
         );
 
-        $html = '';
+        $html = 'var wpulivesearch_tpl = {};';
         foreach ($default_templates as $key => $value) {
             $value = isset($templates[$key]) ? $templates[$key] : $value;
-            $html .= '<script type="template/html" id="wpulivesearch_results_' . $key . '">' . $value . '</script>';
+            $html .= 'wpulivesearch_tpl.' . $key . '=' . $this->get_html_as_js_content($value) . ';';
         }
 
-        return $html;
+        return '<script>' . $html . '</script>';
+    }
+
+    public function get_html_as_js_content($value) {
+        /* Protect HTML quotes */
+        $value = addslashes($value);
+
+        /* Fix for multiline */
+        $value = explode("\n", $value);
+        $value = implode("'+\n'", $value);
+
+        /* Add simple quotes */
+        return "'" . $value . "'";
     }
 }
 

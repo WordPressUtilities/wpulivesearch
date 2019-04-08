@@ -62,14 +62,6 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
         $filters_multiples = document.querySelectorAll('.wpulivesearch-filter-multiple input[type="checkbox"]'),
         $results_container = document.getElementById('wpulivesearch_results');
 
-    /* Templates */
-    var template__item = document.getElementById('wpulivesearch_results_item').innerHTML,
-        template__default = document.getElementById('wpulivesearch_results_default').innerHTML,
-        template__counter = document.getElementById('wpulivesearch_results_counter').innerHTML,
-        template__noresults = document.getElementById('wpulivesearch_results_noresults').innerHTML,
-        template__before = document.getElementById('wpulivesearch_results_before').innerHTML,
-        template__after = document.getElementById('wpulivesearch_results_after').innerHTML;
-
     /* Build filters */
     (function() {
         var _html = '',
@@ -95,10 +87,10 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
     $searchform.addEventListener('reset', clear_search, 1);
 
     /* Default content */
-    $results_container.innerHTML = template__default;
+    $results_container.innerHTML = wpulivesearch_tpl.default;
 
     function clear_search() {
-        $results_container.innerHTML = template__default;
+        $results_container.innerHTML = wpulivesearch_tpl.default;
         (function($filters) {
             setTimeout(function() {
                 wpulivesearch_reset_active_filters($filters);
@@ -181,38 +173,38 @@ jQuery(document).on('wpulivesearch_datas_ready', function() {
 
         /* Build HTML display */
         if (_results.length) {
-            _html += wpulivesearch_get_filled_template(template__before, {
+            _html += wpulivesearch_get_filled_template('before', {
                 page_nb: 0
             });
             for (var _result in _results) {
                 if (_counter > 0 && _current_count % _per_page === 0) {
                     _nb_pages++;
                     _current_count = 0;
-                    _html += template__after;
-                    _html += wpulivesearch_get_filled_template(template__before, {
+                    _html += wpulivesearch_tpl.after;
+                    _html += wpulivesearch_get_filled_template('before', {
                         page_nb: _nb_pages
                     });
                 }
-                _html += wpulivesearch_get_filled_template(template__item, _results[_result]);
+                _html += wpulivesearch_get_filled_template('item', _results[_result]);
                 _counter++;
                 _current_count++;
             }
-            _html += template__after;
+            _html += wpulivesearch_tpl.after;
         }
 
-        var _counter_html = wpulivesearch_get_filled_template(template__counter, {
+        var _counter_html = wpulivesearch_get_filled_template('counter', {
             count: _counter
         });
 
         _html = _counter_html + _html;
 
         if (_counter === 0) {
-            _html = template__noresults;
+            _html = wpulivesearch_tpl.noresults;
         }
 
         /* Build template */
         if (!_html) {
-            _html = template__default;
+            _html = wpulivesearch_tpl.default;
         }
         $results_container.innerHTML = _html;
 
@@ -366,7 +358,7 @@ function wpulivesearch_set_pager_content($pager, _current) {
         _tmpHTMLBefore = '',
         _tmpHTMLAfter = '',
         _nb_start = 0,
-        _nb_max = wpulivesearch_settings.nb_items_in_pager,
+        _nb_max = parseInt(wpulivesearch_settings.nb_items_in_pager,10),
         _nb_end = _nb_pages + 1;
 
     var _nb_display_before = Math.floor((_nb_max - 1) / 2);
@@ -375,22 +367,42 @@ function wpulivesearch_set_pager_content($pager, _current) {
         _nb_start = Math.max(0, _current - _nb_display_before);
         _nb_end = Math.min(_nb_end, _nb_start + _nb_max);
         if (_nb_start >= 1) {
-            _tmpHTMLBefore += '<a href="#" class="first" data-page="0"><span>&lt;&lt;</span></a>';
+            _tmpHTMLBefore += wpulivesearch_get_filled_template('pager_item', {
+                class_name: 'first',
+                page_nb: 0,
+                content: '&lt;&lt;'
+            });
         }
         if (_current > 0) {
-            _tmpHTMLBefore += '<a href="#" class="prev" data-page="' + (_current - 1) + '"><span>&lt;</span></a>';
+            _tmpHTMLBefore += wpulivesearch_get_filled_template('pager_item', {
+                class_name: 'prev',
+                page_nb: (_current - 1),
+                content: '&lt;'
+            });
         }
         if (_current < _nb_pages) {
-            _tmpHTMLAfter += '<a href="#" class="next" data-page="' + (_current + 1) + '"><span>&gt;</span></a>';
+            _tmpHTMLAfter += wpulivesearch_get_filled_template('pager_item', {
+                class_name: 'next',
+                page_nb: (_current + 1),
+                content: '&gt;'
+            });
         }
         if (_nb_end < _nb_pages + 1) {
-            _tmpHTMLAfter += '<a href="#" class="last" data-page="' + _nb_pages + '"><span>&gt;&gt;</span></a>';
+            _tmpHTMLAfter += wpulivesearch_get_filled_template('pager_item', {
+                class_name: 'last',
+                page_nb: _nb_pages,
+                content: '&gt;&gt;'
+            });
         }
     }
 
     for (var i = _nb_start; i < _nb_end; i++) {
         /* Create link */
-        _tmpHTML += '<a href="#" data-page="' + i + '" class="item ' + (i === _current ? ' current' : '') + '"><span>' + (i + 1) + '</span></a>';
+        _tmpHTML += wpulivesearch_get_filled_template('pager_item', {
+            class_name: 'item ' + (i === _current ? ' current' : ''),
+            page_nb: i,
+            content: (i + 1)
+        });
     }
 
     $pager.innerHTML = _tmpHTMLBefore + _tmpHTML + _tmpHTMLAfter;
@@ -401,12 +413,16 @@ function wpulivesearch_set_pager_content($pager, _current) {
 
 function wpulivesearch_pager_clickevent(e) {
     'use strict';
-    if (e.target.tagName != 'A') {
+    var $target = e.target;
+    if ($target.tagName == 'SPAN') {
+        $target = $target.parentNode;
+    }
+    else if ($target.tagName != 'A') {
         return;
     }
     e.preventDefault();
-    var page_nb = parseInt(e.target.getAttribute('data-page'), 10);
-    wpulivesearch_set_pager_content(e.target.parentNode, page_nb);
+    var page_nb = parseInt($target.getAttribute('data-page'), 10);
+    wpulivesearch_set_pager_content($target.parentNode, page_nb);
     wpulivesearch_goto_page(page_nb);
 }
 
@@ -563,8 +579,9 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
   Templating
 ---------------------------------------------------------- */
 
-function wpulivesearch_get_filled_template(_tmp_result_html, values) {
+function wpulivesearch_get_filled_template(_tpl_id, values) {
     'use strict';
+    var _tmp_result_html = wpulivesearch_tpl[_tpl_id];
     for (var _value in values) {
         _tmp_result_html = _tmp_result_html.replace('{{' + _value + '}}', values[_value]);
     }
