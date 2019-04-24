@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.5.8
+Version: 0.5.9
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.5.8';
+    private $plugin_version = '0.5.9';
     private $settings = array(
         'view_selected_multiple_values' => false,
         'fulltext_and_filters' => true,
@@ -39,7 +39,7 @@ class WPULiveSearch {
     public function wp_enqueue_scripts() {
         wp_register_style('wpulivesearch_front_css', plugins_url('assets/front.css', __FILE__), '', $this->plugin_version);
         wp_enqueue_style('wpulivesearch_front_css');
-        wp_register_script('wpulivesearch_front_js', plugins_url('assets/front.js', __FILE__), 'jquery', $this->plugin_version, true);
+        wp_register_script('wpulivesearch_front_js', plugins_url('assets/front.js', __FILE__), '', $this->plugin_version, true);
         wp_localize_script('wpulivesearch_front_js', 'wpulivesearch_settings', array(
             'fulltext_and_filters' => $this->settings['fulltext_and_filters'] ? 1 : 0,
             'nb_items_in_pager' => $this->settings['nb_items_in_pager'],
@@ -73,11 +73,11 @@ class WPULiveSearch {
             if (!file_exists($file)) {
                 file_put_contents($file, $wpulivesearch_datas_js);
             }
-            echo '<script>jQuery(document).ready(function($) {wpulivesearch_async_load("' . $wp_upload_dir['url'] . '/' . $wpulivesearch_datas_file_url . '")});</script>';
+            echo '<script>document.addEventListener("DOMContentLoaded",function(){wpulivesearch_async_load("' . $wp_upload_dir['url'] . '/' . $wpulivesearch_datas_file_url . '")});</script>';
         } else {
             /* Display datas */
             echo '<script>' . $wpulivesearch_datas_js . '</script>';
-            echo '<script>jQuery(document).ready(function(){jQuery(document).trigger("wpulivesearch_datas_ready");});</script>';
+            echo '<script>document.addEventListener("DOMContentLoaded",function(){wpulivesearch_trigger_datas_ready()});</script>';
         }
 
         echo '<script>';

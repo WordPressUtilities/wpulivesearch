@@ -1,6 +1,6 @@
 /* globals jQuery, wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_datas_keys, wpulivesearch_settings */
 
-jQuery(document).on('wpulivesearch_datas_ready', function() {
+document.addEventListener('wpulivesearch_datas_ready', function() {
 
     'use strict';
 
@@ -358,7 +358,7 @@ function wpulivesearch_set_pager_content($pager, _current) {
         _tmpHTMLBefore = '',
         _tmpHTMLAfter = '',
         _nb_start = 0,
-        _nb_max = parseInt(wpulivesearch_settings.nb_items_in_pager,10),
+        _nb_max = parseInt(wpulivesearch_settings.nb_items_in_pager, 10),
         _nb_end = _nb_pages + 1;
 
     var _nb_display_before = Math.floor((_nb_max - 1) / 2);
@@ -651,8 +651,16 @@ function wpulivesearch_async_load(src) {
         s = d.getElementsByTagName(t)[0];
 
     o.onload = function() {
-        jQuery(document).trigger('wpulivesearch_datas_ready');
+        wpulivesearch_trigger_datas_ready();
     };
     o.src = src;
     s.parentNode.insertBefore(o, s);
+}
+
+/* ----------------------------------------------------------
+  Trigger
+---------------------------------------------------------- */
+
+function wpulivesearch_trigger_datas_ready() {
+    document.dispatchEvent(new Event('wpulivesearch_datas_ready'));
 }
