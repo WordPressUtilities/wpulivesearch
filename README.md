@@ -75,10 +75,10 @@ function testtest_wpulivesearch_settings($settings = array()) {
 
 ## TODO
 
+* !! Initial values.
 * Moar filters & hooks.
 * Add autoupdater.
 * Add admin settings.
-* Add default content for wrapper.
 * Pager : config for display (text, classname)
 * Handle multiple livesearch on the same page.
 

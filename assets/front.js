@@ -309,7 +309,8 @@ function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) 
     for (var i = 0; i < $opts.length; i++) {
         _itemParent = $opts[i].parentNode;
         _isHiddenValue = force ? 0 : active_filters.indexOf($opts[i].value) < 0 ? 1 : 0;
-        _itemParent.setAttribute('data-hidden', _isHiddenValue);
+        $opts[i].setAttribute('data-hidden', _isHiddenValue);
+        $el.setAttribute('aria-disabled', _isHiddenValue ? 'true' : 'false');
         if (wpulivesearch_settings.inclusive_search) {
             _itemParent.setAttribute('data-disabled', _isHiddenValue);
         }
