@@ -90,6 +90,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     $results_container.innerHTML = wpulivesearch_tpl.default;
 
     function clear_search() {
+        $results_container.dispatchEvent(new Event('wpulivesearch_clear_search'));
         $results_container.innerHTML = wpulivesearch_tpl.default;
         (function($filters) {
             setTimeout(function() {
@@ -207,6 +208,13 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             _html = wpulivesearch_tpl.default;
         }
         $results_container.innerHTML = _html;
+
+        var event = new Event('wpulivesearch_results');
+        event.wpulivesearch = {
+            counter: _counter,
+            results: _results
+        };
+        $results_container.dispatchEvent(event);
 
         /* Set pager */
         if (_nb_pages > 0) {
