@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.5.10
+Version: 0.5.11
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.5.10';
+    private $plugin_version = '0.5.11';
     private $settings = array(
         'view_selected_multiple_values' => false,
         'fulltext_and_filters' => true,
@@ -53,6 +53,11 @@ class WPULiveSearch {
     }
 
     public function display_form($datas = array(), $filters = array(), $templates = array()) {
+
+        if (!is_array($datas) && is_object($datas) && isset($datas->name)) {
+            $datas = array($datas);
+        }
+
         if (!is_array($datas) || !is_array($filters)) {
             return;
         }
@@ -101,7 +106,9 @@ class WPULiveSearch {
         $datas = array();
 
         foreach ($_datas as $_data) {
-            $_data = get_object_vars($_data);
+            if (!is_array($_data)) {
+                $_data = get_object_vars($_data);
+            }
             if (empty($_keys)) {
                 $keys = array_keys($_data);
             }
@@ -162,6 +169,9 @@ class WPULiveSearch {
     public function display_filter($key, $value) {
         $html = '';
         $_label = ucfirst($key);
+        if (isset($value['label'])) {
+            $_label = esc_attr($value['label']);
+        }
         if (isset($value['multiple']) && $value['multiple']) {
             $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
             $html .= '<label class="main-label">' . $_label . '</label>';

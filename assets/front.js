@@ -20,7 +20,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 filters: {}
             };
 
-            for (ii = 0, len2 = _raw_data.length; ii < len; ii++) {
+            for (ii = 0, len2 = _raw_data.length; ii < len2; ii++) {
                 wpulivesearch_datas[i][wpulivesearch_datas_keys[ii]] = _raw_data[ii];
             }
 
@@ -30,7 +30,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             for (_filter in wpulivesearch_filters) {
 
                 /* Store filters */
-                wpulivesearch_datas[i].filters[_filter] = wpulivesearch_datas[i][_filter];
+                wpulivesearch_datas[i].filters[_filter] = wpulivesearch_datas[i][_filter].toString();
 
                 /* Replace fulltext filters */
                 if (!wpulivesearch_datas[i][_filter] || !wpulivesearch_filters[_filter].fulltext) {
@@ -238,7 +238,8 @@ function wpulivesearch_extract_active_filters(_results, $filters, $filters_multi
 
     for (i in _results) {
         for (_filter in _results[i].filters) {
-            tmp_result = _results[i].filters[_filter].trim();
+            tmp_result = _results[i].filters[_filter];
+            tmp_result = typeof tmp_result == 'string' ? tmp_result.trim() : tmp_result;
             if (!tmp_result) {
                 continue;
             }
