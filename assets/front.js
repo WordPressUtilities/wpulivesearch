@@ -89,6 +89,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     /* Default content */
     $results_container.innerHTML = wpulivesearch_tpl.default;
 
+    $results_container.dispatchEvent(new Event('wpulivesearch_results_ready'));
+
     function clear_search() {
         $results_container.dispatchEvent(new Event('wpulivesearch_clear_search'));
         $results_container.innerHTML = wpulivesearch_tpl.default;
@@ -593,7 +595,7 @@ function wpulivesearch_get_filled_template(_tpl_id, values) {
     'use strict';
     var _tmp_result_html = wpulivesearch_tpl[_tpl_id];
     for (var _value in values) {
-        _tmp_result_html = _tmp_result_html.replace('{{' + _value + '}}', values[_value]);
+        _tmp_result_html = _tmp_result_html.replace(new RegExp('{{' + _value + '}}','g'), values[_value]);
     }
     return _tmp_result_html;
 }
