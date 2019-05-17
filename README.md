@@ -75,7 +75,6 @@ function testtest_wpulivesearch_settings($settings = array()) {
 
 ## TODO
 
-* !! Initial values.
 * Moar filters & hooks.
 * Add autoupdater.
 * Add admin settings.
@@ -104,3 +103,4 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Compress field name for filters.
 * Inclusive or exclusive filters ( filter1 && filter2 / filter1 || filter 2).
 * Keep filter value in URL.
+* Initial values from URL.

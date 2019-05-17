@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.5.13
+Version: 0.6.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.5.13';
+    private $plugin_version = '0.6.0';
     private $settings = array(
         'view_selected_multiple_values' => false,
         'fulltext_and_filters' => true,
@@ -166,22 +166,41 @@ class WPULiveSearch {
         return '<div class="wpulivesearch-filters">' . $html . '</div>';
     }
 
+    public function _display_filter($key, $value) {
+        $html = '';
+
+        $html .= '<div class="wpulivesearch-filter ' . ($is_multiple ? 'wpulivesearch-filter--multiple' : 'wpulivesearch-filter--select') . '" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
+        $html .= '<label class="main-label">' . $_label . '</label>';
+        if (!$is_multiple) {
+            $html .= '<select name="' . $key . '" data-key="' . $key . '">';
+            $html .= '<option value="" ' . ($value['required'] ? 'disabled' : '') . '>' . $_label . '</option>';
+            $html .= '</select>';
+        }
+        $html .= '</div>';
+        return '<div class="wpulivesearch-filter__wrapper" data-multiple="' . (isset($value['multiple']) && $value['multiple'] ? '1' : '0') . '">' . $html . '</div>';
+    }
+
     public function display_filter($key, $value) {
         $html = '';
         $_label = ucfirst($key);
         if (isset($value['label'])) {
             $_label = esc_attr($value['label']);
         }
+        $is_multiple = isset($value['multiple']) && $value['multiple'];
+        $value['required'] = isset($value['required']) && $value['required'];
+        $html .= '<div class="wpulivesearch-filter__item">';
         if (isset($value['multiple']) && $value['multiple']) {
             $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
             $html .= '<label class="main-label">' . $_label . '</label>';
             $html .= '</div>';
 
         } else {
-            $html .= '<select class="wpulivesearch-filter wpulivesearch-filter--select" name="' . $key . '" data-key="' . $key . '">';
-            $html .= '<option value="">' . $_label . '</option>';
+            $html .= '<label for="wpulivesearch_filter_' . $key . '" class="main-label">' . $_label . '</label>';
+            $html .= '<select class="wpulivesearch-filter wpulivesearch-filter--select" id="wpulivesearch_filter_' . $key . '" name="' . $key . '" data-key="' . $key . '">';
+            $html .= '<option ' . ($value['required'] ? 'disabled="disabled"' : '') . ' value="">' . $_label . '</option>';
             $html .= '</select>';
         }
+        $html .= '</div>';
         return '<div class="wpulivesearch-filter__wrapper" data-multiple="' . (isset($value['multiple']) && $value['multiple'] ? '1' : '0') . '">' . $html . '</div>';
     }
 

@@ -28,6 +28,10 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             wpulivesearch_datas[i].fulltext.name = wpulivesearch_clean_value(wpulivesearch_datas[i].name);
 
             for (_filter in wpulivesearch_filters) {
+                if (!wpulivesearch_datas[i][_filter]) {
+                    console.error('The filter "' + _filter + '" should be defined in this data element.');
+                    continue;
+                }
 
                 /* Store filters */
                 wpulivesearch_datas[i].filters[_filter] = wpulivesearch_datas[i][_filter].toString();
@@ -90,6 +94,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     $results_container.innerHTML = wpulivesearch_tpl.default;
 
     $results_container.dispatchEvent(new Event('wpulivesearch_results_ready'));
+
+    live_search();
 
     function clear_search() {
         $results_container.dispatchEvent(new Event('wpulivesearch_clear_search'));
@@ -595,7 +601,10 @@ function wpulivesearch_get_filled_template(_tpl_id, values) {
     'use strict';
     var _tmp_result_html = wpulivesearch_tpl[_tpl_id];
     for (var _value in values) {
-        _tmp_result_html = _tmp_result_html.replace(new RegExp('{{' + _value + '}}','g'), values[_value]);
+        if (!values[_value]) {
+            values[_value] = '';
+        }
+        _tmp_result_html = _tmp_result_html.replace(new RegExp('{{' + _value + '}}', 'g'), values[_value]);
     }
     return _tmp_result_html;
 }
@@ -609,6 +618,8 @@ function wpulivesearch_get_filter_html(_key, _value) {
     var _html = '';
     var is_multiple = (_value.multiple == '1'),
         _tmpValue,
+        _extra_attr,
+        _selected,
         _item_id,
         _val;
 
@@ -619,11 +630,13 @@ function wpulivesearch_get_filter_html(_key, _value) {
     /* Parse values */
     for (_val in _value.values) {
         _item_id = 'filter-' + _key + _value.values[_val].value;
+        _selected = !!_value.values[_val].selected;
+        _extra_attr = _value.values[_val].extra ? ' data-extra="' + encodeURI(_value.values[_val].extra) + '"' : '';
         if (is_multiple) {
-            _html += '<div class="value"><input id="' + _item_id + '" type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
+            _html += '<div class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
         }
         else {
-            _html += '<option value="' + _value.values[_val].value + '">' + _value.values[_val].label + '</option>';
+            _html += '<option' + _extra_attr + ' ' + (_selected ? 'selected="selected"' : '') + ' value="' + _value.values[_val].value + '">' + _value.values[_val].label + '</option>';
         }
     }
 
