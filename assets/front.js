@@ -601,7 +601,7 @@ function wpulivesearch_get_filled_template(_tpl_id, values) {
     'use strict';
     var _tmp_result_html = wpulivesearch_tpl[_tpl_id];
     for (var _value in values) {
-        if (!values[_value]) {
+        if (!values[_value] && values[_value] !== '0' && values[_value] !== 0) {
             values[_value] = '';
         }
         _tmp_result_html = _tmp_result_html.replace(new RegExp('{{' + _value + '}}', 'g'), values[_value]);
