@@ -201,14 +201,21 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             _html += wpulivesearch_tpl.after;
         }
 
-        var _counter_html = wpulivesearch_get_filled_template('counter', {
-            count: _counter
-        });
-
-        _html = _counter_html + _html;
-
+        /* Counter */
         if (_counter === 0) {
             _html = wpulivesearch_tpl.noresults;
+        }
+        else {
+            var _counter_html = wpulivesearch_get_filled_template('counter', {
+                count: _counter
+            });
+            if (_counter <= 1) {
+                _counter_html = _counter_html.replace(/<span class="multiple">([^<]*)<\/span>/, '');
+            }
+            else {
+                _counter_html = _counter_html.replace(/<span class="simple">([^<]*)<\/span>/, '');
+            }
+            _html = _counter_html + _html;
         }
 
         /* Build template */
