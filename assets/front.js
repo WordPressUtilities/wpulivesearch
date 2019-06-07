@@ -89,6 +89,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
     /* Reset */
     $searchform.addEventListener('reset', clear_search, 1);
+    var initial_form = '1';
+    $searchform.setAttribute('data-changed', '0');
 
     /* Default content */
     $results_container.innerHTML = wpulivesearch_tpl.default;
@@ -98,12 +100,20 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     live_search();
 
     function clear_search() {
+        $searchform.setAttribute('data-changed', '0');
         $results_container.dispatchEvent(new Event('wpulivesearch_clear_search'));
         $results_container.innerHTML = wpulivesearch_tpl.default;
         (function($filters) {
             setTimeout(function() {
-                wpulivesearch_reset_active_filters($filters);
-            }, 100);
+                var _reset = wpulivesearch_reset_active_filters($filters);
+                /* A field has a default value */
+                if (_reset) {
+                    /* Reset the form and trigger live search again */
+                    initial_form = '1';
+                    $searchform.setAttribute('data-changed', '0');
+                    live_search();
+                }
+            }, 50);
         }($filters));
     }
 
@@ -231,6 +241,11 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         };
         $results_container.dispatchEvent(event);
 
+        if (initial_form != '1') {
+            $searchform.setAttribute('data-changed', '1');
+        }
+        initial_form = '0';
+
         /* Set pager */
         if (_nb_pages > 0) {
             /* Create pager */
@@ -279,14 +294,19 @@ function wpulivesearch_extract_active_filters(_results, $filters, $filters_multi
 
 function wpulivesearch_reset_active_filters($filters) {
     'use strict';
+    var _hasDefault = false;
     for (var i = 0, len = $filters.length; i < len; i++) {
         if ($filters[i].tagName == 'SELECT') {
+            if ($filters[i].hasAttribute('data-default')) {
+                _hasDefault = true;
+            }
             wpulivesearch_set_active_filters__select([], $filters[i], true);
         }
         else {
             wpulivesearch_set_active_filters__multiple([], $filters[i], true);
         }
     }
+    return _hasDefault;
 }
 
 /* Parse
@@ -318,7 +338,13 @@ function wpulivesearch_set_active_filters__select(active_filters, $el, force) {
         }
     }
     if (force) {
-        $el.selectedIndex = 0;
+        var _index = 0;
+        /* Default value exists */
+        if ($el.hasAttribute('data-default')) {
+            /* Selected index is after the placeholder label */
+            _index = parseInt($el.getAttribute('data-default'), 10) + 1;
+        }
+        $el.selectedIndex = _index;
     }
 }
 
