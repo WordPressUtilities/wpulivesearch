@@ -503,7 +503,7 @@ function wpulivesearch_goto_page(page_nb) {
     var $page = document.querySelector('[data-livepagenb="' + page_nb + '"]'),
         $pages = document.querySelectorAll('[data-livepagenb]');
 
-    if(!$page){
+    if (!$page) {
         console.error('The page #' + page_nb + ' has not been found. Maybe check the "before" template ?');
         return;
     }
@@ -564,9 +564,19 @@ function wpulivesearch_extract_values_from_filters($filters) {
         }
         else {
             _checkList = $filters[i].querySelectorAll('input[type="checkbox"]');
-            for (i2 = 0, len2 = _checkList.length; i2 < len2; i2++) {
-                if (_checkList[i2].checked) {
-                    _tmpValue.push(_checkList[i2].value);
+            if (_checkList.length) {
+                for (i2 = 0, len2 = _checkList.length; i2 < len2; i2++) {
+                    if (_checkList[i2].checked) {
+                        _tmpValue.push(_checkList[i2].value);
+                    }
+                }
+            }
+            else {
+                _checkList = $filters[i].querySelectorAll('input[type="radio"]');
+                for (i2 = 0, len2 = _checkList.length; i2 < len2; i2++) {
+                    if (_checkList[i2].checked) {
+                        _tmpValue = _checkList[i2].value;
+                    }
                 }
             }
         }
@@ -658,13 +668,14 @@ function wpulivesearch_get_filter_html(_key, _value) {
     'use strict';
     var _html = '';
     var is_multiple = (_value.multiple == '1'),
+        is_radio = _value.input_type && _value.input_type == 'radio',
         _tmpValue,
         _extra_attr,
         _selected,
         _item_id,
         _val;
 
-    if (is_multiple) {
+    if (is_multiple || is_radio) {
         _html += '<div class="values">';
     }
 
@@ -677,11 +688,16 @@ function wpulivesearch_get_filter_html(_key, _value) {
             _html += '<div class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
         }
         else {
-            _html += '<option' + _extra_attr + ' ' + (_selected ? 'selected="selected"' : '') + ' value="' + _value.values[_val].value + '">' + _value.values[_val].label + '</option>';
+            if (is_radio) {
+                _html += '<div class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="radio" name="' + _key + '" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
+            }
+            else {
+                _html += '<option' + _extra_attr + ' ' + (_selected ? 'selected="selected"' : '') + ' value="' + _value.values[_val].value + '">' + _value.values[_val].label + '</option>';
+            }
         }
     }
 
-    if (is_multiple) {
+    if (is_multiple || is_radio) {
         _html += '</div>';
     }
 

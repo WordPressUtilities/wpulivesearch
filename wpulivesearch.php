@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.7.0
+Version: 0.8.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.7.0';
+    private $plugin_version = '0.8.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -20,7 +20,12 @@ class WPULiveSearch {
         'inclusive_search' => false,
         'results_per_page' => 999,
         'nb_items_in_pager' => 9,
-        'minimal_fulltext_value' => 1
+        'minimal_fulltext_value' => 1,
+        'search_form_order' => array(
+            'search_form',
+            'filters',
+            'reset'
+        )
     );
 
     public function __construct() {
@@ -52,6 +57,7 @@ class WPULiveSearch {
             'inclusive_search' => $this->settings['inclusive_search'],
             'view_selected_multiple_values' => $this->settings['view_selected_multiple_values'],
             'minimal_fulltext_value' => $this->settings['minimal_fulltext_value'],
+            'search_form_order' => $this->settings['search_form_order'],
             'plugin_version' => $this->plugin_version
         ));
         wp_enqueue_script('wpulivesearch_front_js');
@@ -94,14 +100,27 @@ class WPULiveSearch {
         echo 'var wpulivesearch_filters=' . json_encode($filters) . ';';
         echo 'var wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
         echo '</script>';
-        echo '<form id="form_wpulivesearch" action="#" method="post">';
-        echo '<div class="wpulivesearch-search">';
-        echo '<label for="wpulivesearch">' . apply_filters('wpulivesearch_text_search_label', __('Search', 'wpulivesearch')) . '</label>';
-        echo '<input placeholder="' . apply_filters('wpulivesearch_text_search_placeholder', __('Search', 'wpulivesearch')) . '" class="wpulivesearch-search" id="wpulivesearch" type="text" name="search" value="" />';
-        echo '</div>';
-        echo $this->display_filters($filters);
-        echo '<input type="reset" id="wpulivesearch-reset" name="wpulivesearch-reset" value="' . apply_filters('wpulivesearch_text_resetbutton_text', __('Reset', 'wpulivesearch')) . '" />';
-        echo '</form>';
+        echo '<div class="form-wpulivesearch__wrapper"><form class="form-wpulivesearch" id="form_wpulivesearch" action="#" method="post">';
+        do_action('wpulivesearch_form_before_content');
+        if (!is_array($this->settings['search_form_order'])) {
+            $this->settings['search_form_order'] = array();
+        }
+        $search_form_order = array_unique($this->settings['search_form_order']);
+        foreach ($search_form_order as $item) {
+            switch ($item) {
+            case 'search_form':
+                echo $this->display_search_form();
+                break;
+            case 'filters':
+                echo $this->display_filters($filters);
+                break;
+            case 'reset':
+                echo $this->display_reset();
+                break;
+            }
+        }
+        do_action('wpulivesearch_form_after_content');
+        echo '</form></div>';
         echo '<div aria-live="polite" id="wpulivesearch_results"></div>';
         echo $this->display_templates($templates);
     }
@@ -160,6 +179,24 @@ class WPULiveSearch {
       Display
     ---------------------------------------------------------- */
 
+    /* Reset
+    -------------------------- */
+
+    public function display_reset() {
+        return '<div class="wpulivesearch-reset-wrapper"><input type="reset" id="wpulivesearch-reset" name="wpulivesearch-reset" value="' . apply_filters('wpulivesearch_text_resetbutton_text', __('Reset', 'wpulivesearch')) . '" /></div>';
+    }
+
+    /* Search
+    -------------------------- */
+
+    public function display_search_form() {
+        $html = '<div class="wpulivesearch-search">';
+        $html .= '<label for="wpulivesearch">' . apply_filters('wpulivesearch_text_search_label', __('Search', 'wpulivesearch')) . '</label>';
+        $html .= '<input placeholder="' . apply_filters('wpulivesearch_text_search_placeholder', __('Search', 'wpulivesearch')) . '" class="wpulivesearch-search" id="wpulivesearch" type="text" name="search" value="" />';
+        $html .= '</div>';
+        return $html;
+    }
+
     /* Filters
     -------------------------- */
 
@@ -191,11 +228,17 @@ class WPULiveSearch {
                     $default_value = $i;
                 }
             }
+            if (isset($value['input_type']) && $value['input_type'] == 'radio') {
+                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--radio" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
+                $html .= '<label class="main-label">' . $_label . '</label>';
+                $html .= '</div>';
+            } else {
+                $html .= '<label for="wpulivesearch_filter_' . $key . '" class="main-label">' . $_label . '</label>';
+                $html .= '<select ' . ($default_value !== false ? ' data-default="' . esc_attr($default_value) . '"' : '') . ' class="wpulivesearch-filter wpulivesearch-filter--select" id="wpulivesearch_filter_' . $key . '" name="' . $key . '" data-key="' . $key . '">';
+                $html .= '<option ' . ($value['required'] ? 'disabled="disabled"' : '') . ' value="">' . $_label . '</option>';
+                $html .= '</select>';
+            }
 
-            $html .= '<label for="wpulivesearch_filter_' . $key . '" class="main-label">' . $_label . '</label>';
-            $html .= '<select ' . ($default_value !== false ? ' data-default="' . esc_attr($default_value) . '"' : '') . ' class="wpulivesearch-filter wpulivesearch-filter--select" id="wpulivesearch_filter_' . $key . '" name="' . $key . '" data-key="' . $key . '">';
-            $html .= '<option ' . ($value['required'] ? 'disabled="disabled"' : '') . ' value="">' . $_label . '</option>';
-            $html .= '</select>';
         }
         $html .= '</div>';
 

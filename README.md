@@ -18,16 +18,35 @@ foreach ($datas as &$var) {
     $var->name = $var->display_name;
 }
 
-/* Add taxonomies filters */
+/* Add filters */
 $filters = array(
+    /* Taxonomy : Text value will be used for fulltext search */
     'job' => array(
         'taxonomy' => 'job',
-        /* Text value will be used for fulltext search */
         'fulltext' => 1
     ),
-    /* Exact match will be required */
+    /* Taxonomy : Exact match will be required */
     'category' => array(
         'taxonomy' => 'category'
+    ),
+    /* Taxonomy : Same as previous, but with radio buttons */
+    'category' => array(
+        'input_type' => 'radio',
+        'taxonomy' => 'category'
+    ),
+    /* Custom values */
+    'week' => array(
+        'multiple' => 1,
+        'values' => array(
+            array(
+                'label' => 'My value',
+                'value' => 'value'
+            ),
+            array(
+                'label' => 'My other value',
+                'value' => 'other-value'
+            )
+        )
     )
 );
 
