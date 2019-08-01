@@ -77,7 +77,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     }());
 
     /* Live Search event */
-    $searchbox.addEventListener('keyup', live_search, 1);
+    $searchform.addEventListener('reload_live_search', live_search, 1);
+
     /* Selectors events */
     for (var i = 0, len = $filters.length; i < len; i++) {
         $filters[i].addEventListener('change', live_search, 1);
