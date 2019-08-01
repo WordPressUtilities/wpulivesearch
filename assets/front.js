@@ -107,7 +107,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             setTimeout(function() {
                 var _reset = wpulivesearch_reset_active_filters($filters);
                 /* A field has a default value */
-                if (_reset) {
+                if (_reset || wpulivesearch_settings.load_all_default == '1') {
                     /* Reset the form and trigger live search again */
                     initial_form = '1';
                     $searchform.setAttribute('data-changed', '0');
@@ -141,13 +141,17 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             }
         }
 
-        if (!_hasFilterValue && !_hasFullTextValue) {
+        if (!_hasFilterValue && !_hasFullTextValue && wpulivesearch_settings.load_all_default != '1') {
             clear_search();
             return;
         }
 
         /* Check each item */
         for (i = 0, len = wpulivesearch_datas.length; i < len; i++) {
+
+            if (wpulivesearch_settings.load_all_default) {
+                _results[i] = wpulivesearch_datas[i];
+            }
 
             /* Full text search */
             _hasFullText = false;
@@ -164,7 +168,6 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             }
 
             if (wpulivesearch_settings.fulltext_and_filters && typeof _results[i] !== 'undefined') {
-
                 /* Filters are filled but an invalid text is set */
                 if (_hasFilters && _hasFullTextValue && !_hasFullText) {
                     delete _results[i];
@@ -499,6 +502,11 @@ function wpulivesearch_goto_page(page_nb) {
 
     var $page = document.querySelector('[data-livepagenb="' + page_nb + '"]'),
         $pages = document.querySelectorAll('[data-livepagenb]');
+
+    if(!$page){
+        console.error('The page #' + page_nb + ' has not been found. Maybe check the "before" template ?');
+        return;
+    }
 
     for (var i = 0, len = $pages.length; i < len; i++) {
         $pages[i].style.display = 'none';

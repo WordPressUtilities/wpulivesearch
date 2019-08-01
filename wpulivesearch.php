@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.6.2
+Version: 0.7.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,8 +11,9 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.6.2';
+    private $plugin_version = '0.7.0';
     private $settings = array(
+        'load_all_default' => false,
         'view_selected_multiple_values' => false,
         'fulltext_and_filters' => true,
         'load_datas_in_file' => false,
@@ -24,6 +25,7 @@ class WPULiveSearch {
 
     public function __construct() {
         add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
+        add_action('wp', array(&$this, 'wp'));
         add_action('wp_enqueue_scripts', array(&$this, 'wp_enqueue_scripts'));
         add_action('wpulivesearch_form', array(&$this, 'display_form'), 10, 3);
     }
@@ -31,7 +33,9 @@ class WPULiveSearch {
     public function plugins_loaded() {
         /* Translation */
         load_plugin_textdomain('wpulivesearch', false, dirname(plugin_basename(__FILE__)) . '/lang/');
+    }
 
+    public function wp() {
         /* Filter hook */
         $this->settings = apply_filters('wpulivesearch_settings', $this->settings);
     }
@@ -43,6 +47,7 @@ class WPULiveSearch {
         wp_localize_script('wpulivesearch_front_js', 'wpulivesearch_settings', array(
             'fulltext_and_filters' => $this->settings['fulltext_and_filters'] ? 1 : 0,
             'nb_items_in_pager' => $this->settings['nb_items_in_pager'],
+            'load_all_default' => $this->settings['load_all_default'] ? 1 : 0,
             'results_per_page' => $this->settings['results_per_page'],
             'inclusive_search' => $this->settings['inclusive_search'],
             'view_selected_multiple_values' => $this->settings['view_selected_multiple_values'],

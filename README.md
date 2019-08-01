@@ -33,7 +33,7 @@ $filters = array(
 
 /* Overrides some templates */
 $templates = array(
-    'before' => '<ul class="my-custom-results">',
+    'before' => '<ul data-livepagenb="{{page_nb}}" class="my-custom-results">',
     'after' => '</ul>'
 );
 
@@ -47,6 +47,8 @@ do_action('wpulivesearch_form', $datas, $filters, $templates);
 ```php
 add_filter('wpulivesearch_settings', 'testtest_wpulivesearch_settings', 10, 1);
 function testtest_wpulivesearch_settings($settings = array()) {
+    /* Load all results by default */
+    $settings['load_all_default'] = false;
     /* Fulltext and filters and linked */
     $settings['fulltext_and_filters'] = true;
     /* Load datas in a separate JS file : better performances if page is cached */
@@ -80,6 +82,7 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Add admin settings.
 * Pager : config for display (text, classname)
 * Handle multiple livesearch on the same page.
+* Pager : lazy load instead of pages.
 
 ### Results
 
