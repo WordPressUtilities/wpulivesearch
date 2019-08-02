@@ -103,7 +103,7 @@ function testtest_wpulivesearch_settings($settings = array()) {
 * Add admin settings.
 * Pager : config for display (text, classname)
 * Handle multiple livesearch on the same page.
-* Pager : lazy load instead of pages.
+* Ensure attributes are present on templates.
 
 ### Results
 
