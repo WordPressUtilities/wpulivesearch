@@ -72,9 +72,11 @@ function testtest_wpulivesearch_settings($settings = array()) {
     $settings['fulltext_and_filters'] = true;
     /* Load datas in a separate JS file : better performances if page is cached */
     $settings['load_datas_in_file'] = false;
+    /* Use a load more button instead of a classic pager */
+    $settings['pager_load_more'] = false;
     /* Paginate results */
     $settings['results_per_page'] = 999;
-    /* Max number of page numbers visible at once in pager */
+    /* Max number of page numbers visible at once in the pager */
     $settings['nb_items_in_pager'] = 9;
     /* Fulltext is not used if there is less characters than this value */
     $settings['minimal_fulltext_value'] = 1;

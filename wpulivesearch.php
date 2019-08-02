@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.8.1
+Version: 0.9.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.8.1';
+    private $plugin_version = '0.9.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -20,6 +20,7 @@ class WPULiveSearch {
         'inclusive_search' => false,
         'results_per_page' => 999,
         'nb_items_in_pager' => 9,
+        'pager_load_more' => false,
         'minimal_fulltext_value' => 1,
         'search_form_order' => array(
             'search_form',
@@ -53,6 +54,7 @@ class WPULiveSearch {
             'fulltext_and_filters' => $this->settings['fulltext_and_filters'] ? 1 : 0,
             'nb_items_in_pager' => $this->settings['nb_items_in_pager'],
             'load_all_default' => $this->settings['load_all_default'] ? 1 : 0,
+            'pager_load_more' => $this->settings['pager_load_more'] ? 1 : 0,
             'results_per_page' => $this->settings['results_per_page'],
             'inclusive_search' => $this->settings['inclusive_search'],
             'view_selected_multiple_values' => $this->settings['view_selected_multiple_values'],
@@ -271,6 +273,7 @@ class WPULiveSearch {
         }
         $default_templates = array(
             'default' => '',
+            'pager_load_more' => '<a href="#" data-page="1" class="load-more-button"><span>' . __('Load more', 'wpulivesearch') . '</span></a>',
             'pager_item' => '<a href="#" class="{{class_name}}" data-page="{{page_nb}}"><span>{{content}}</span></a>',
             'noresults' => '<div class="wpulivesearch-noresults">' . __('No results for this query, sorry', 'wpulivesearch') . '</div>',
             'counter' => '<div class="wpulivesearch-count"><span class="multiple">' . str_replace('%s', '{{count}}', __('%s results', 'wpulivesearch')) . '</span><span class="simple">' . str_replace('%s', '{{count}}', __('%s result', 'wpulivesearch')) . '</span></div>',

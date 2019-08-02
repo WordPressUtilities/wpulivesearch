@@ -396,7 +396,13 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
     $pager.classList.add('wpulivesearch-pager');
     $pager.setAttribute('data-nbpages', _nb_pages);
 
-    wpulivesearch_set_pager_content($pager, 0);
+    if (wpulivesearch_settings.pager_load_more != '1') {
+        wpulivesearch_set_pager_content($pager, 0);
+    }
+    else {
+        $pager.classList.add('wpulivesearch-pager--load-more');
+        $pager.innerHTML = wpulivesearch_tpl.pager_load_more;
+    }
 
     $pager.addEventListener('click', wpulivesearch_pager_clickevent, 1);
 
@@ -405,6 +411,21 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
     /* Trigger display page 1 */
     wpulivesearch_goto_page(0);
 
+}
+
+function wpulivesearch_set_load_more_content($pager, _current) {
+    var $button = $pager.querySelector('.load-more-button'),
+        _nb_pages = parseInt($pager.getAttribute('data-nbpages'), 10);
+    if (!$button) {
+        return;
+    }
+    /* Last page : delete pager */
+    if (_current == _nb_pages) {
+        $pager.parentNode.removeChild($pager);
+        return;
+    }
+    /* Set next page */
+    $button.setAttribute('data-page', _current + 1);
 }
 
 function wpulivesearch_set_pager_content($pager, _current) {
@@ -477,7 +498,12 @@ function wpulivesearch_pager_clickevent(e) {
     }
     e.preventDefault();
     var page_nb = parseInt($target.getAttribute('data-page'), 10);
-    wpulivesearch_set_pager_content($target.parentNode, page_nb);
+    if (wpulivesearch_settings.pager_load_more == '1') {
+        wpulivesearch_set_load_more_content($target.parentNode, page_nb);
+    }
+    else {
+        wpulivesearch_set_pager_content($target.parentNode, page_nb);
+    }
     wpulivesearch_goto_page(page_nb);
 }
 
@@ -510,10 +536,14 @@ function wpulivesearch_goto_page(page_nb) {
     }
 
     for (var i = 0, len = $pages.length; i < len; i++) {
+        if (wpulivesearch_settings.pager_load_more == '1' && i < page_nb) {
+            $pages[i].style.display = '';
+            continue;
+        }
         $pages[i].style.display = 'none';
     }
 
-    $page.setAttribute('style', '');
+    $page.style.display = '';
 
     wpulivesearch_lazyload_items($page.parentNode, page_nb);
 }
