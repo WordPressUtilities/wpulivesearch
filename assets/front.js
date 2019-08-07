@@ -1,4 +1,4 @@
-/* globals jQuery, wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_datas_keys, wpulivesearch_settings */
+/* globals wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_datas_keys, wpulivesearch_settings */
 
 document.addEventListener('wpulivesearch_datas_ready', function() {
 
@@ -414,7 +414,7 @@ function wpulivesearch_create_pager($wrapper, _nb_pages) {
 }
 
 function wpulivesearch_set_load_more_content($pager, _current) {
-    var $button = $pager.querySelector('.load-more-button'),
+    var $button = $pager.querySelector('[data-loadmorebutton="1"]'),
         _nb_pages = parseInt($pager.getAttribute('data-nbpages'), 10);
     if (!$button) {
         return;

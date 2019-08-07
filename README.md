@@ -99,11 +99,9 @@ function testtest_wpulivesearch_settings($settings = array()) {
 ## TODO
 
 * Moar filters & hooks.
-* Add autoupdater.
 * Add admin settings.
 * Pager : config for display (text, classname)
 * Handle multiple livesearch on the same page.
-* Ensure attributes are present on templates.
 
 ### Results
 

@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.9.1
+Version: 0.9.2
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.9.1';
+    private $plugin_version = '0.9.2';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -39,6 +39,14 @@ class WPULiveSearch {
     public function plugins_loaded() {
         /* Translation */
         load_plugin_textdomain('wpulivesearch', false, dirname(plugin_basename(__FILE__)) . '/lang/');
+
+        /* Updater */
+        include dirname(__FILE__) . '/inc/WPUBaseUpdate/WPUBaseUpdate.php';
+        $this->settings_update = new \wpulivesearch\WPUBaseUpdate(
+            'WordPressUtilities',
+            'wpulivesearch',
+            $this->plugin_version);
+
     }
 
     public function wp() {
@@ -272,19 +280,53 @@ class WPULiveSearch {
             $templates = array();
         }
         $default_templates = array(
-            'default' => '',
-            'pager_load_more' => '<a href="#" data-page="1" class="load-more-button"><span>' . __('Load more', 'wpulivesearch') . '</span></a>',
-            'pager_item' => '<a href="#" class="{{class_name}}" data-page="{{page_nb}}"><span>{{content}}</span></a>',
-            'noresults' => '<div class="wpulivesearch-noresults">' . __('No results for this query, sorry', 'wpulivesearch') . '</div>',
-            'counter' => '<div class="wpulivesearch-count"><span class="multiple">' . str_replace('%s', '{{count}}', __('%s results', 'wpulivesearch')) . '</span><span class="simple">' . str_replace('%s', '{{count}}', __('%s result', 'wpulivesearch')) . '</span></div>',
-            'before' => '<ul data-livepagenb="{{page_nb}}" class="wpulivesearch-list">',
-            'after' => '</ul>',
-            'item' => '<li class="wpulivesearch-item">{{name}}</li>'
+            'default' => array(
+                'html' => ''
+            ),
+            'pager_load_more' => array(
+                'html' => '<a href="#" data-page="1" data-loadmorebutton="1" class="load-more-button"><span>' . __('Load more', 'wpulivesearch') . '</span></a>',
+                'attributes' => array(
+                    'data-page="1"',
+                    'data-loadmorebutton="1"'
+                )
+            ),
+            'pager_item' => array(
+                'html' => '<a href="#" class="{{class_name}}" data-page="{{page_nb}}"><span>{{content}}</span></a>',
+                'attributes' => array(
+                    'data-page="{{page_nb}}"'
+                )
+            ),
+            'noresults' => array(
+                'html' => '<div class="wpulivesearch-noresults">' . __('No results for this query, sorry', 'wpulivesearch') . '</div>'
+            ),
+            'counter' => array(
+                'html' => '<div class="wpulivesearch-count"><span class="multiple">' . str_replace('%s', '{{count}}', __('%s results', 'wpulivesearch')) . '</span><span class="simple">' . str_replace('%s', '{{count}}', __('%s result', 'wpulivesearch')) . '</span></div>'
+            ),
+            'before' => array(
+                'html' => '<ul data-livepagenb="{{page_nb}}" class="wpulivesearch-list">',
+                'attributes' => array(
+                    'data-livepagenb="{{page_nb}}"'
+                )
+            ),
+            'after' => array(
+                'html' => '</ul>'
+            ),
+            'item' => array(
+                'html' => '<li class="wpulivesearch-item">{{name}}</li>'
+            )
         );
 
         $html = 'var wpulivesearch_tpl = {};';
         foreach ($default_templates as $key => $value) {
-            $value = isset($templates[$key]) ? $templates[$key] : $value;
+            $value = isset($templates[$key]) ? $templates[$key] : $value['html'];
+            /* Check if templates have their required attributes */
+            if (isset($default_templates[$key]['attributes'])) {
+                foreach ($default_templates[$key]['attributes'] as $k => $required_attr) {
+                    if (strpos($value, $required_attr) === false && preg_match('/^<([a-z]*)/', $value, $matches)) {
+                        $value = str_replace($matches[0], $matches[0] . ' ' . $required_attr . ' ', $value);
+                    }
+                }
+            }
             $html .= 'wpulivesearch_tpl.' . $key . '=' . $this->get_html_as_js_content($value) . ';';
         }
 
