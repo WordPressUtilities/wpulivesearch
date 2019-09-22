@@ -121,10 +121,12 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     function live_search() {
         /* Clean value */
         var _fulltext_value = wpulivesearch_clean_value($searchbox.value),
+            _minimal_numeric_value = parseInt(wpulivesearch_settings.minimal_numeric_value, 10),
             _minimal_fulltext_value = parseInt(wpulivesearch_settings.minimal_fulltext_value, 10);
 
         var _results = [],
-            _hasFullTextValue = _fulltext_value.length > _minimal_fulltext_value,
+            _isNumericSearch = _fulltext_value.match(/^([0-9]+)$/),
+            _hasFullTextValue = (_fulltext_value.length > _minimal_fulltext_value) || (_isNumericSearch && _fulltext_value.length > _minimal_numeric_value),
             _hasFilterValue = false,
             _filtersValues = [],
             _hasFullText,

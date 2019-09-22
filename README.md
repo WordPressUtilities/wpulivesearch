@@ -78,8 +78,10 @@ function testtest_wpulivesearch_settings($settings = array()) {
     $settings['results_per_page'] = 999;
     /* Max number of page numbers visible at once in the pager */
     $settings['nb_items_in_pager'] = 9;
-    /* Fulltext is not used if there is less characters than this value */
+    /* Fulltext is not used if there is less characters than in this value */
     $settings['minimal_fulltext_value'] = 1;
+    /* Fulltext is not used if there is less characters than in this value and search query is numbers-only */
+    $settings['minimal_numeric_value'] = 1;
     /* Inclusive search hide all filters values non relevant to the search */
     $settings['inclusive_search'] = false;
     /* Display selected values in multiple selectors label */
