@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.9.4
+Version: 0.9.5
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.9.4';
+    private $plugin_version = '0.9.5';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -34,7 +34,7 @@ class WPULiveSearch {
         add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
         add_action('wp', array(&$this, 'wp'));
         add_action('wp_enqueue_scripts', array(&$this, 'wp_enqueue_scripts'));
-        add_action('wpulivesearch_form', array(&$this, 'display_form'), 10, 3);
+        add_action('wpulivesearch_form', array(&$this, 'display_form'), 10, 4);
     }
 
     public function plugins_loaded() {
@@ -75,7 +75,7 @@ class WPULiveSearch {
         wp_enqueue_script('wpulivesearch_front_js');
     }
 
-    public function display_form($datas = array(), $filters = array(), $templates = array()) {
+    public function display_form($datas = array(), $filters = array(), $templates = array(), $form_settings = array()) {
 
         if (!is_array($datas) && is_object($datas) && isset($datas->name)) {
             $datas = array($datas);
@@ -85,6 +85,12 @@ class WPULiveSearch {
             return;
         }
 
+        if (!is_array($form_settings)) {
+            $form_settings = array();
+        }
+        if (!isset($form_settings['form_classname'])) {
+            $form_settings['form_classname'] = '';
+        }
         $filters = $this->build_filters($filters);
         $new_datas = $this->control_datas($datas);
 
@@ -102,17 +108,18 @@ class WPULiveSearch {
                 file_put_contents($file, $wpulivesearch_datas_js);
             }
             echo '<script>document.addEventListener("DOMContentLoaded",function(){wpulivesearch_async_load("' . $wp_upload_dir['url'] . '/' . $wpulivesearch_datas_file_url . '")});</script>';
+        } elseif (isset($form_settings['load_datas_manual']) && $form_settings['load_datas_manual']) {
+            /* Do nothing */
         } else {
             /* Display datas */
             echo '<script>' . $wpulivesearch_datas_js . '</script>';
             echo '<script>document.addEventListener("DOMContentLoaded",function(){wpulivesearch_trigger_datas_ready()});</script>';
         }
-
         echo '<script>';
         echo 'var wpulivesearch_filters=' . json_encode($filters) . ';';
         echo 'var wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
         echo '</script>';
-        echo '<div class="form-wpulivesearch__wrapper"><form class="form-wpulivesearch" id="form_wpulivesearch" action="#" method="post" onsubmit="return false">';
+        echo '<div class="form-wpulivesearch__wrapper"><form class="form-wpulivesearch ' . $form_settings['form_classname'] . '" id="form_wpulivesearch" action="#" method="post" onsubmit="return false">';
         do_action('wpulivesearch_form_before_content');
         if (!is_array($this->settings['search_form_order'])) {
             $this->settings['search_form_order'] = array();
