@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.9.5
+Version: 0.9.6
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.9.5';
+    private $plugin_version = '0.9.6';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -119,7 +119,9 @@ class WPULiveSearch {
         echo 'var wpulivesearch_filters=' . json_encode($filters) . ';';
         echo 'var wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
         echo '</script>';
-        echo '<div class="form-wpulivesearch__wrapper"><form class="form-wpulivesearch ' . $form_settings['form_classname'] . '" id="form_wpulivesearch" action="#" method="post" onsubmit="return false">';
+        echo '<div class="form-wpulivesearch__wrapper">';
+        do_action('wpulivesearch_formwrapper_before_form');
+        echo '<form class="form-wpulivesearch ' . $form_settings['form_classname'] . '" id="form_wpulivesearch" action="#" method="post" onsubmit="return false">';
         do_action('wpulivesearch_form_before_content');
         if (!is_array($this->settings['search_form_order'])) {
             $this->settings['search_form_order'] = array();
@@ -139,7 +141,9 @@ class WPULiveSearch {
             }
         }
         do_action('wpulivesearch_form_after_content');
-        echo '</form></div>';
+        echo '</form>';
+        do_action('wpulivesearch_formwrapper_after_form');
+        echo '</div>';
         echo apply_filters('wpulivesearch_results_base_html', '<div aria-live="polite" id="wpulivesearch_results"></div>');
         echo $this->display_templates($templates);
     }
