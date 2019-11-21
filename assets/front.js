@@ -87,6 +87,14 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         $filters_multiples[i2].addEventListener('change', live_search, 1);
     }
     $searchbox.addEventListener('keyup', live_search, 1);
+    $searchbox.addEventListener('keydown', function(e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            var _ev = new Event('wpulivesearch_searchbox_enter');
+            $searchbox.dispatchEvent(_ev);
+            document.dispatchEvent(_ev);
+        }
+    }, 1);
 
     /* Reset */
     $searchform.addEventListener('reset', clear_search, 1);
