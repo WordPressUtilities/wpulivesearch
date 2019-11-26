@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.9.7
+Version: 0.10.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.9.7';
+    private $plugin_version = '0.10.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -21,6 +21,7 @@ class WPULiveSearch {
         'results_per_page' => 999,
         'nb_items_in_pager' => 9,
         'pager_load_more' => false,
+        'dynamic_url' => true,
         'minimal_fulltext_value' => 1,
         'minimal_numeric_value' => 0,
         'search_form_order' => array(
@@ -64,6 +65,7 @@ class WPULiveSearch {
             'nb_items_in_pager' => $this->settings['nb_items_in_pager'],
             'load_all_default' => $this->settings['load_all_default'] ? 1 : 0,
             'pager_load_more' => $this->settings['pager_load_more'] ? 1 : 0,
+            'dynamic_url' => $this->settings['dynamic_url'] ? 1 : 0,
             'results_per_page' => $this->settings['results_per_page'],
             'inclusive_search' => $this->settings['inclusive_search'],
             'view_selected_multiple_values' => $this->settings['view_selected_multiple_values'],

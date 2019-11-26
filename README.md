@@ -82,6 +82,8 @@ function testtest_wpulivesearch_settings($settings = array()) {
     $settings['minimal_fulltext_value'] = 1;
     /* Fulltext is not used if there is less characters than in this value and search query is numbers-only */
     $settings['minimal_numeric_value'] = 1;
+    /* Dynamic URL sets filter status in URL, allowing to go directly to a filtered view */
+    $settings['dynamic_url'] = false;
     /* Inclusive search hide all filters values non relevant to the search */
     $settings['inclusive_search'] = false;
     /* Display selected values in multiple selectors label */
