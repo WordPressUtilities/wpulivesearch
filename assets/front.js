@@ -240,6 +240,14 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                     continue;
                 }
             }
+
+            /* Custom hook function  */
+            if (typeof wpulivesearch_delete_result == 'function') {
+                if (wpulivesearch_delete_result(_results[i], _fulltext_value, wpulivesearch_settings)) {
+                    delete _results[i];
+                    continue;
+                }
+            }
         }
 
         /* Build response */
