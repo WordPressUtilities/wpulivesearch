@@ -470,9 +470,11 @@ function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) 
             }
         }
     }
-    _displayLabel = (_nbEnabled > 0 ? ' (' + _nbEnabled + ')' : '');
+    var _beforeLabel = wpulivesearch_settings.view_selected__before;
+    var _afterLabel = wpulivesearch_settings.view_selected__after;
+    _displayLabel = (_nbEnabled > 0 ? _beforeLabel + _nbEnabled + _afterLabel : '');
     if (wpulivesearch_settings.view_selected_multiple_values && _nbEnabled) {
-        _displayLabel = '(' + _visibleValues.join(',') + ')';
+        _displayLabel = _beforeLabel + _visibleValues.join(',') + _afterLabel;
     }
     $el.querySelector('.main-label').innerHTML = $el.getAttribute('data-label') + ' ' + _displayLabel;
 }
