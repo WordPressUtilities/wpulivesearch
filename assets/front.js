@@ -839,6 +839,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
 function wpulivesearch_clean_value(_val) {
     'use strict';
     _val = _val.toLowerCase().trim();
+    _val = wpulivesearch_decode_html(_val);
     _val = _val.replace(new RegExp(/[àáâãäå]/g), "a");
     _val = _val.replace(new RegExp(/æ/g), "ae");
     _val = _val.replace(new RegExp(/ç/g), "c");
@@ -849,6 +850,16 @@ function wpulivesearch_clean_value(_val) {
     _val = _val.replace(new RegExp(/œ/g), "oe");
     _val = _val.replace(new RegExp(/[ùúûü]/g), "u");
     _val = _val.replace(new RegExp(/[ýÿ]/g), "y");
+    _val = _val.replace(new RegExp(/([^a-z0-9 ]+)/g), '');
+    return _val;
+}
+
+function wpulivesearch_decode_html(html) {
+    var txt, _val;
+    txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    _val = txt.value;
+    txt.remove();
     return _val;
 }
 
