@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WPU Live Search\n"
-"POT-Creation-Date: 2019-12-13 14:01+0100\n"
+"POT-Creation-Date: 2019-12-22 21:37+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Darklg <darklg.blog@gmail.com>\n"
 "Language-Team: \n"
@@ -15,28 +15,28 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-SearchPath-0: ../.\n"
 
-#: .././wpulivesearch.php:216
+#: .././wpulivesearch.php:260
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: .././wpulivesearch.php:226 .././wpulivesearch.php:227
+#: .././wpulivesearch.php:270 .././wpulivesearch.php:271
 msgid "Search"
 msgstr "Rechercher"
 
-#: .././wpulivesearch.php:309
+#: .././wpulivesearch.php:354
 msgid "Load more"
 msgstr "Afficher plus"
 
-#: .././wpulivesearch.php:322
+#: .././wpulivesearch.php:367
 msgid "No results for this query, sorry"
 msgstr "Désolé, il n'y a aucun résultat pour cette requête"
 
-#: .././wpulivesearch.php:325
+#: .././wpulivesearch.php:370
 #, php-format
 msgid "%s results"
 msgstr "%s résultats"
 
-#: .././wpulivesearch.php:325
+#: .././wpulivesearch.php:370
 #, php-format
 msgid "%s result"
 msgstr "%s résultat"

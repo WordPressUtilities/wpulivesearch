@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.10.3
+Version: 0.11.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.10.3';
+    private $plugin_version = '0.11.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -201,7 +201,51 @@ class WPULiveSearch {
             unset($filter['taxonomy']);
         }
 
+        foreach ($filters as &$filter) {
+            if (!isset($filter['sortby'])) {
+                continue;
+            }
+            $callback_uasort = array(&$this, 'sort_alpha_label');
+            if ($filter['sortby'] == 'labelinv') {
+                $callback_uasort = array(&$this, 'sort_alpha_label_inv');
+            }
+            if ($filter['sortby'] == 'value') {
+                $callback_uasort = array(&$this, 'sort_alpha_value');
+            }
+            if ($filter['sortby'] == 'valueinv') {
+                $callback_uasort = array(&$this, 'sort_alpha_value_inv');
+            }
+            uasort($filter['values'], $callback_uasort);
+            unset($filter['sortby']);
+        }
+
         return $filters;
+    }
+
+    public function sort_alpha_label($a, $b) {
+        $_a = remove_accents(strtolower($a['label']));
+        $_b = remove_accents(strtolower($b['label']));
+        error_log($_a);
+        error_log($_b);
+        return strcmp($_a, $_b);
+    }
+
+    public function sort_alpha_label_inv($a, $b) {
+        $_a = remove_accents(strtolower($a['label']));
+        $_b = remove_accents(strtolower($b['label']));
+        return strcmp($_b, $_a);
+    }
+
+    public function sort_alpha_value($a, $b) {
+        $_a = remove_accents(strtolower($a['value']));
+        $_b = remove_accents(strtolower($b['value']));
+        return strcmp($_a, $_b);
+    }
+
+    public function sort_alpha_value_inv($a, $b) {
+        $_a = remove_accents(strtolower($a['value']));
+        $_b = remove_accents(strtolower($b['value']));
+        return strcmp($_b, $_a);
     }
 
     /* ----------------------------------------------------------
@@ -258,6 +302,7 @@ class WPULiveSearch {
             foreach ($value['values'] as $i => $_value) {
                 if (isset($_value['selected']) && $_value['selected']) {
                     $default_value = $i;
+                    continue;
                 }
             }
             if (isset($value['input_type']) && $value['input_type'] == 'radio') {
