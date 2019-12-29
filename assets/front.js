@@ -25,7 +25,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             }
 
             /* Clean values */
-            wpulivesearch_datas[i].fulltext.name = wpulivesearch_clean_value(wpulivesearch_datas[i].name);
+            wpulivesearch_datas[i] = set_fulltext_values(wpulivesearch_datas[i]);
 
             for (_filter in wpulivesearch_filters) {
                 if (!wpulivesearch_datas[i][_filter]) {
@@ -44,6 +44,19 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                     replace_filters_values(_filter_id, wpulivesearch_filters[_filter].values);
                 }
             }
+        }
+
+        /* Add manual fulltext keys */
+        function set_fulltext_values(wpulivesearch_datas_item) {
+            var _key = '';
+            for (var i = 0, len = wpulivesearch_settings.fulltext_keys.length; i < len; i++) {
+                _key = wpulivesearch_settings.fulltext_keys[i];
+                if (wpulivesearch_datas_item[_key]) {
+                    wpulivesearch_datas_item.fulltext[_key] = wpulivesearch_clean_value(wpulivesearch_datas_item[_key]);
+                }
+            }
+            console.log(wpulivesearch_datas_item.fulltext);
+            return wpulivesearch_datas_item;
         }
 
         /* Ensure values are correct in the search arrays */
