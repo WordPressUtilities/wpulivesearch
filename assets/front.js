@@ -55,7 +55,6 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                     wpulivesearch_datas_item.fulltext[_key] = wpulivesearch_clean_value(wpulivesearch_datas_item[_key]);
                 }
             }
-            console.log(wpulivesearch_datas_item.fulltext);
             return wpulivesearch_datas_item;
         }
 
@@ -359,7 +358,9 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 }
                 _hash += _filtersValues[i].id + ':' + tmp_values;
             }
-            window.location.hash = _hash;
+            if (_hash) {
+                window.location.hash = _hash;
+            }
             if (!_hash) {
                 history.replaceState(null, null, ' ');
             }
