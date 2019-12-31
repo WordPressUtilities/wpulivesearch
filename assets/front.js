@@ -34,7 +34,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 }
 
                 /* Store filters */
-                wpulivesearch_datas[i].filters[_filter] = wpulivesearch_datas[i][_filter].toString();
+                wpulivesearch_datas[i].filters[_filter] = wpulivesearch_datas[i][_filter].toString().split(',');
 
                 /* Replace fulltext filters */
                 if (!wpulivesearch_datas[i][_filter] || !wpulivesearch_filters[_filter].fulltext) {
@@ -381,12 +381,12 @@ function wpulivesearch_extract_active_filters(_results, $filters, $filters_multi
     var active_filters = {},
         _filter,
         _filter_key,
+        ii,
         i,
         tmp_result;
     for (_filter_key in wpulivesearch_filters) {
         active_filters[_filter_key] = [];
     }
-
     for (i in _results) {
         for (_filter in _results[i].filters) {
             tmp_result = _results[i].filters[_filter];
@@ -394,8 +394,10 @@ function wpulivesearch_extract_active_filters(_results, $filters, $filters_multi
             if (!tmp_result) {
                 continue;
             }
-            if (active_filters[_filter].indexOf(tmp_result) < 0) {
-                active_filters[_filter].push(tmp_result);
+            for (ii = 0, len = tmp_result.length; ii < len; ii++) {
+                if (active_filters[_filter].indexOf(tmp_result[ii]) < 0) {
+                    active_filters[_filter].push(tmp_result[ii]);
+                }
             }
         }
     }
@@ -753,6 +755,8 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
     var has_filter,
         filter_values,
         filter_id,
+        filter_intersect,
+        filter_value_arr,
         i,
         len;
 
@@ -770,7 +774,11 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
         }
 
         /* Item value is not in the filter values */
-        if (filter_values.indexOf(_item.filters[filter_id]) < 0) {
+        filter_intersect = _item.filters[filter_id].filter(function(n) {
+            return filter_values.indexOf(n) > -1;
+        });
+
+        if (filter_intersect.length < 1) {
             return false;
         }
 
