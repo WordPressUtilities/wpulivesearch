@@ -358,12 +358,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 }
                 _hash += _filtersValues[i].id + ':' + tmp_values;
             }
-            if (_hash) {
-                window.location.hash = _hash;
-            }
-            if (!_hash) {
-                history.replaceState(null, null, ' ');
-            }
+            history.replaceState(null, null, _hash ? '#' + _hash : ' ');
             _pause_hash = true;
         }());
 
