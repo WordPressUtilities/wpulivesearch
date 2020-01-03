@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.13.1
+Version: 0.13.2
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.13.1';
+    private $plugin_version = '0.13.2';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_multiple_values' => false,
@@ -227,8 +227,6 @@ class WPULiveSearch {
     public function sort_alpha_label($a, $b) {
         $_a = remove_accents(strtolower($a['label']));
         $_b = remove_accents(strtolower($b['label']));
-        error_log($_a);
-        error_log($_b);
         return strcmp($_a, $_b);
     }
 
