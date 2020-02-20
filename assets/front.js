@@ -461,7 +461,7 @@ function wpulivesearch_set_active_filters__select(active_filters, $el, force) {
 function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) {
     'use strict';
     var $opts = $el.querySelectorAll('input[type="checkbox"]'),
-        _displayLabel,
+        $mainLabel = $el.querySelector('.main-label'),
         _isHiddenValue,
         _itemParent,
         _visibleValues = [],
@@ -483,13 +483,26 @@ function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) 
     }
     var _beforeLabel = wpulivesearch_settings.view_selected__before;
     var _afterLabel = wpulivesearch_settings.view_selected__after;
-    _displayLabel = (_nbEnabled > 0 ? _beforeLabel + _nbEnabled + _afterLabel : '');
+    var _displayLabel = (_nbEnabled > 0 ? _beforeLabel + _nbEnabled + _afterLabel : '');
     if (wpulivesearch_settings.view_selected_multiple_values && _nbEnabled) {
         _displayLabel = _beforeLabel + _visibleValues.join(',') + _afterLabel;
     }
-    $el.querySelector('.main-label').innerHTML = $el.getAttribute('data-label') + ' ' + _displayLabel;
-}
+    $mainLabel.innerHTML = $el.getAttribute('data-label') + ' ' + _displayLabel;
+    $mainLabel.setAttribute('data-enabled', _nbEnabled);
 
+    /* Default label change to radio value if not a multiple filter */
+    if (wpulivesearch_settings.view_selected_simple_replace_label && $el.getAttribute('data-multiple') == '0') {
+        var _check = $el.querySelectorAll('input[type="radio"]:checked');
+
+        if (_check[0]) {
+            $mainLabel.setAttribute('data-enabled', 1);
+
+            $mainLabel.innerHTML = _check[0].parentNode.querySelector('label').innerHTML;
+        } else {
+            $mainLabel.innerHTML = $el.getAttribute('data-label');
+        }
+    }
+}
 /* ----------------------------------------------------------
   Pager
 ---------------------------------------------------------- */

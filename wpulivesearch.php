@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.13.2
+Version: 0.13.3
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,9 +11,10 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.13.2';
+    private $plugin_version = '0.13.3';
     private $settings = array(
         'load_all_default' => false,
+        'view_selected_simple_replace_label' => false,
         'view_selected_multiple_values' => false,
         'view_selected__before' => '(',
         'view_selected__after' => ')',
@@ -73,6 +74,7 @@ class WPULiveSearch {
             'results_per_page' => $this->settings['results_per_page'],
             'inclusive_search' => $this->settings['inclusive_search'],
             'view_selected_multiple_values' => $this->settings['view_selected_multiple_values'],
+            'view_selected_simple_replace_label' => $this->settings['view_selected_simple_replace_label'],
             'view_selected__before' => $this->settings['view_selected__before'],
             'view_selected__after' => $this->settings['view_selected__after'],
             'minimal_fulltext_value' => $this->settings['minimal_fulltext_value'],
@@ -294,7 +296,7 @@ class WPULiveSearch {
         $value['required'] = isset($value['required']) && $value['required'];
         $html .= '<div class="wpulivesearch-filter__item">';
         if (isset($value['multiple']) && $value['multiple']) {
-            $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
+            $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-multiple="1" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
             $html .= '<label class="main-label">' . $_label . '</label>';
             $html .= '</div>';
         } else {
@@ -306,7 +308,7 @@ class WPULiveSearch {
                 }
             }
             if (isset($value['input_type']) && $value['input_type'] == 'radio') {
-                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--radio" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
+                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--radio" data-multiple="0" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
                 $html .= '<label class="main-label">' . $_label . '</label>';
                 $html .= '</div>';
             } else {
