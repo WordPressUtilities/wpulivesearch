@@ -147,8 +147,12 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             (function() {
                 var _id = _hash_filter_tmp[0];
                 var _values = _hash_filter_tmp[1].split(',');
+                var _tmp_post;
                 for (var i = 0, len = _values.length; i < len; i++) {
-                    document.getElementById('filter-' + _id + _values[i]).checked = true;
+                    _tmp_post = document.getElementById('filter-' + _id + _values[i]);
+                    if (_tmp_post) {
+                        _tmp_post.checked = true;
+                    }
                 }
             }());
         }
@@ -498,7 +502,8 @@ function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) 
             $mainLabel.setAttribute('data-enabled', 1);
 
             $mainLabel.innerHTML = _check[0].parentNode.querySelector('label').innerHTML;
-        } else {
+        }
+        else {
             $mainLabel.innerHTML = $el.getAttribute('data-label');
         }
     }
