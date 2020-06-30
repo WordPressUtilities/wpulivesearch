@@ -323,6 +323,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
         var event = new Event('wpulivesearch_results');
         event.wpulivesearch = {
+            filters: _filtersValues,
             counter: _counter,
             results: _results
         };
