@@ -126,7 +126,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     });
 
     function check_hash() {
-        if (!wpulivesearch_settings.dynamic_url) {
+        if (!wpulivesearch_settings.dynamic_url || wpulivesearch_settings.dynamic_url == '0') {
             return;
         }
         var _hash = window.location.hash;
@@ -345,7 +345,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
         /* Set dynamic URL */
         (function() {
-            if (!wpulivesearch_settings.dynamic_url) {
+            if (!wpulivesearch_settings.dynamic_url || wpulivesearch_settings.dynamic_url == '0') {
                 return;
             }
             var _hash = '',
@@ -838,6 +838,11 @@ function wpulivesearch_get_filter_html(_key, _value) {
         _item_id,
         _val;
 
+    var _initial = [];
+    if (typeof _value.selected !== 'undefined') {
+        _initial = _value.selected;
+    }
+
     if (is_multiple || is_radio) {
         _html += '<div class="values">';
     }
@@ -845,7 +850,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
     /* Parse values */
     for (_val in _value.values) {
         _item_id = 'filter-' + _key + _value.values[_val].value;
-        _selected = !!_value.values[_val].selected;
+        _selected = !!_value.values[_val].selected  ||_initial.indexOf(_value.values[_val].value) >= 0;
         _extra_attr = _value.values[_val].extra ? ' data-extra="' + encodeURI(_value.values[_val].extra) + '"' : '';
         if (is_multiple) {
             _html += '<div class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
