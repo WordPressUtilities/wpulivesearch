@@ -291,7 +291,13 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                         page_nb: _nb_pages
                     });
                 }
+                if (typeof wpulivesearch_get_filled_template__before_item == "function") {
+                    _html += wpulivesearch_get_filled_template__before_item(_nb_pages, _current_count);
+                }
                 _html += wpulivesearch_get_filled_template('item', _results[_result]);
+                if (typeof wpulivesearch_get_filled_template__after_item == "function") {
+                    _html += wpulivesearch_get_filled_template__after_item(_nb_pages, _current_count);
+                }
                 _counter++;
                 _current_count++;
             }
@@ -850,7 +856,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
     /* Parse values */
     for (_val in _value.values) {
         _item_id = 'filter-' + _key + _value.values[_val].value;
-        _selected = !!_value.values[_val].selected  ||_initial.indexOf(_value.values[_val].value) >= 0;
+        _selected = !!_value.values[_val].selected || _initial.indexOf(_value.values[_val].value) >= 0;
         _extra_attr = _value.values[_val].extra ? ' data-extra="' + encodeURI(_value.values[_val].extra) + '"' : '';
         if (is_multiple) {
             _html += '<div class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
