@@ -277,6 +277,11 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         /* Extract filters available in results */
         wpulivesearch_extract_active_filters(_results, $filters, $filters_multiples);
 
+        /* Hook before items loading */
+        if (typeof wpulivesearch_get_filled_template__before_items == 'function') {
+            wpulivesearch_get_filled_template__before_items(_results);
+        }
+
         /* Build HTML display */
         if (_results.length) {
             _html += wpulivesearch_get_filled_template('before', {
@@ -302,6 +307,11 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 _current_count++;
             }
             _html += wpulivesearch_tpl.after;
+        }
+
+        /* Hook after items loading */
+        if (typeof wpulivesearch_get_filled_template__after_items == 'function') {
+            wpulivesearch_get_filled_template__after_items(_results);
         }
 
         /* Counter */
