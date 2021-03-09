@@ -335,6 +335,11 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         if (!_html) {
             _html = wpulivesearch_tpl.default;
         }
+
+        if (initial_form == '1') {
+            _html = wpulivesearch_tpl.before_default + _html + wpulivesearch_tpl.after_default;
+        }
+
         $results_container.innerHTML = _html;
 
         var event = new Event('wpulivesearch_results');
