@@ -282,6 +282,11 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             wpulivesearch_get_filled_template__before_items(_results);
         }
 
+        /* Sort results */
+        if (typeof wpulivesearch_settings.sort_results_callback == "function") {
+            _results.sort(wpulivesearch_settings.sort_results_callback);
+        }
+
         /* Build HTML display */
         if (_results.length) {
             _html += wpulivesearch_get_filled_template('before', {
