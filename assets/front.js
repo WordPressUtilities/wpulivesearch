@@ -649,6 +649,16 @@ function wpulivesearch_pager_clickevent(e) {
         return;
     }
     e.preventDefault();
+    wpulivesearch_pager_clickevent_target($target);
+}
+
+function wpulivesearch_pager_clickevent_target($target) {
+    if (!$target) {
+        $target = document.querySelector('.wpulivesearch-pager--load-more a');
+    }
+    if(!$target){
+        return;
+    }
     var page_nb = parseInt($target.getAttribute('data-page'), 10);
     if (wpulivesearch_settings.pager_load_more == '1') {
         wpulivesearch_set_load_more_content($target.parentNode, page_nb);
