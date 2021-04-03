@@ -355,6 +355,14 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         };
         $results_container.dispatchEvent(event);
 
+        var hasFilter = false;
+        for (var _filterItem in _filtersValues) {
+            if (_filtersValues[_filterItem].value.length > 0) {
+                hasFilter = true;
+            }
+        }
+        $searchform.setAttribute('data-hasfilter', hasFilter ? '1' : '0');
+
         if (initial_form != '1') {
             $searchform.setAttribute('data-changed', '1');
         }
@@ -656,7 +664,7 @@ function wpulivesearch_pager_clickevent_target($target) {
     if (!$target) {
         $target = document.querySelector('.wpulivesearch-pager--load-more a');
     }
-    if(!$target){
+    if (!$target) {
         return;
     }
     var page_nb = parseInt($target.getAttribute('data-page'), 10);
