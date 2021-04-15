@@ -46,6 +46,36 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             }
         }
 
+        (function() {
+            var _existingFilters = [];
+
+            /* Extract values */
+            (function() {
+                var i, len, filterItem;
+                for (i = 0, len = wpulivesearch_datas.length; i < len; i++) {
+                    for (filterItem in wpulivesearch_datas[i].filters) {
+                        if (!_existingFilters[filterItem]) {
+                            _existingFilters[filterItem] = [];
+                        }
+                        _existingFilters[filterItem] = _existingFilters[filterItem].concat(wpulivesearch_datas[i].filters[filterItem]);
+                    }
+                }
+            }());
+
+            /* Parse filters */
+            (function() {
+                var _filter, _filterVal;
+                for (_filter in wpulivesearch_filters) {
+                    for (_filterVal in wpulivesearch_filters[_filter].values) {
+                        if (_existingFilters[_filter]) {
+                            /* Find if there is at least one item with this filter value */
+                            wpulivesearch_filters[_filter].values[_filterVal].hasitems = _existingFilters[_filter].indexOf(wpulivesearch_filters[_filter].values[_filterVal].value.toString()) != -1;
+                        }
+                    }
+                }
+            }());
+        }());
+
         /* Add manual fulltext keys */
         function set_fulltext_values(wpulivesearch_datas_item) {
             var _key = '';
@@ -897,14 +927,14 @@ function wpulivesearch_get_filter_html(_key, _value) {
         _selected = !!_value.values[_val].selected || _initial.indexOf(_value.values[_val].value) >= 0;
         _extra_attr = _value.values[_val].extra ? ' data-extra="' + encodeURI(_value.values[_val].extra) + '"' : '';
         if (is_multiple) {
-            _html += '<div class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
+            _html += '<div data-hasitems="' + _value.values[_val].hasitems + '" class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
         }
         else {
             if (is_radio) {
-                _html += '<div class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="radio" name="' + _key + '" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
+                _html += '<div data-hasitems="' + _value.values[_val].hasitems + '" class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="radio" name="' + _key + '" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
             }
             else {
-                _html += '<option' + _extra_attr + ' ' + (_selected ? 'selected="selected"' : '') + ' value="' + _value.values[_val].value + '">' + _value.values[_val].label + '</option>';
+                _html += '<option' + _extra_attr + ' ' + (_selected ? 'selected="selected"' : '') + ' value="' + _value.values[_val].value + '" data-hasitems="' + _value.values[_val].hasitems + '">' + _value.values[_val].label + '</option>';
             }
         }
     }
