@@ -214,6 +214,9 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                     $searchform.setAttribute('data-changed', '0');
                     live_search();
                 }
+                else {
+                    history.replaceState(null, null, ' ');
+                }
             }, 50);
         }($filters));
     }
