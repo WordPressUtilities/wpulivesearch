@@ -102,6 +102,19 @@ function testtest_wpulivesearch_settings($settings = array()) {
 }
 ```
 
+## How to : sort results after a button change
+
+```js
+/* Sort by numerical value */
+wpulivesearch_sort_results(function(a, b) {
+    return a.id - b.id;
+});
+/* Sort by alphabetical value */
+wpulivesearch_sort_results(function(a, b) {
+    return a.name.localeCompare(b.name);
+});
+```
+
 ## TODO
 
 * Moar filters & hooks.

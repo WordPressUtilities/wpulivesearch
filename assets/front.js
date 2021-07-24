@@ -435,6 +435,9 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         }());
 
     }
+
+    document.dispatchEvent(new Event('wpulivesearch_results_loaded'));
+
 });
 
 /* ----------------------------------------------------------
@@ -993,6 +996,17 @@ function wpulivesearch_async_load(src) {
     };
     o.src = src;
     s.parentNode.insertBefore(o, s);
+}
+
+/* ----------------------------------------------------------
+  Sort
+---------------------------------------------------------- */
+
+function wpulivesearch_sort_results(callback_func) {
+    /* Update sort method */
+    wpulivesearch_settings.sort_results_callback = callback_func;
+    /* Trigger reload */
+    document.getElementById('form_wpulivesearch').dispatchEvent(new Event('reload_live_search'));
 }
 
 /* ----------------------------------------------------------
