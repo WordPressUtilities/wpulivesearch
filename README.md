@@ -47,6 +47,22 @@ $filters = array(
                 'value' => 'other-value'
             )
         )
+    ),
+    /* Radio with view all button */
+    'month' => array(
+        'input_type' => 'radio',
+        'view_all_label' => 'View all',
+        'has_view_all' => true,
+        'values' => array(
+            array(
+                'label' => 'My value',
+                'value' => 'value'
+            ),
+            array(
+                'label' => 'My other value',
+                'value' => 'other-value'
+            )
+        )
     )
 );
 

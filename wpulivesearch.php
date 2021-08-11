@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.15.1
+Version: 0.15.2
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.15.1';
+    private $plugin_version = '0.15.2';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -191,22 +191,28 @@ class WPULiveSearch {
 
     public function build_filters($filters) {
         foreach ($filters as &$filter) {
+            if (!isset($filter['view_all_label'])) {
+                $filter['view_all_label'] = __('View all', 'wpulivesearch');
+            }
+            if (!isset($filter['has_view_all'])) {
+                $filter['has_view_all'] = false;
+            }
+            $filter['has_view_all'] = !!$filter['has_view_all'];
             if (!isset($filter['taxonomy'])) {
                 continue;
             }
-            if (!isset($filter['label_callback'])) {
-                $filter['label_callback'] = 'name';
-            }
-
             $values = get_terms($filter['taxonomy'], array(
                 'hide_empty' => false
             ));
             $filter['values'] = array();
             if (!is_wp_error($values)) {
+                if (!isset($filter['label_callback'])) {
+                    $filter['label_callback'] = 'name';
+                }
                 foreach ($values as $value) {
                     $label = $value->name;
-                    if($filter['label_callback'] != 'name' && function_exists($filter['label_callback'])){
-                        $label = call_user_func($filter['label_callback'] ,$value);
+                    if ($filter['label_callback'] != 'name' && function_exists($filter['label_callback'])) {
+                        $label = call_user_func($filter['label_callback'], $value);
                     }
                     $filter['values'][] = array(
                         'value' => $value->term_id,
@@ -324,7 +330,11 @@ class WPULiveSearch {
                 }
             }
             if (isset($value['input_type']) && $value['input_type'] == 'radio') {
-                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--radio" data-multiple="0" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
+                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--radio" data-multiple="0" data-label="' . esc_attr($_label) . '"';
+                if ($value['has_view_all']) {
+                    $html .= ' data-view-all-label="' . esc_attr($value['view_all_label']) . '"';
+                }
+                $html .= ' data-key="' . $key . '">';
                 $html .= '<label class="main-label">' . $_label . '</label>';
                 $html .= '</div>';
             } else {

@@ -912,6 +912,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
     var _html = '';
     var is_multiple = (_value.multiple == '1'),
         is_radio = _value.input_type && _value.input_type == 'radio',
+        _has_default_checked = true,
         _tmpValue,
         _extra_attr,
         _selected,
@@ -925,6 +926,18 @@ function wpulivesearch_get_filter_html(_key, _value) {
 
     if (is_multiple || is_radio) {
         _html += '<div class="values">';
+    }
+
+    /* Add "view all" option */
+    if (is_radio && _value.has_view_all && _value.view_all_label) {
+        _item_id = 'default-filter-view-all-' + _key;
+        /* Check only if no other option is selected */
+        for (_val in _value.values) {
+            if (!!_value.values[_val].selected || _initial.indexOf(_value.values[_val].value) >= 0) {
+                _has_default_checked = false;
+            }
+        }
+        _html += '<div class="viewall"><input id="' + _item_id + '" ' + (_has_default_checked ? 'checked="checked"' : '') + ' type="radio" name="' + _key + '" value="" /><label for="' + _item_id + '">' + _value.view_all_label + '</label></div>';
     }
 
     /* Parse values */
