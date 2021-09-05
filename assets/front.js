@@ -648,14 +648,14 @@ function wpulivesearch_set_pager_content($pager, _current) {
         if (_current > 0) {
             _tmpHTMLBefore += wpulivesearch_get_filled_template('pager_item', {
                 class_name: 'prev',
-                page_nb: (_current - 1),
+                page_nb: 'prev',
                 content: '&lt;'
             });
         }
         if (_current < _nb_pages) {
             _tmpHTMLAfter += wpulivesearch_get_filled_template('pager_item', {
                 class_name: 'next',
-                page_nb: (_current + 1),
+                page_nb: 'next',
                 content: '&gt;'
             });
         }
@@ -677,7 +677,7 @@ function wpulivesearch_set_pager_content($pager, _current) {
         });
     }
 
-    $pager.innerHTML = _tmpHTMLBefore + _tmpHTML + _tmpHTMLAfter;
+    $pager.innerHTML = wpulivesearch_tpl.pager_before_items + _tmpHTMLBefore + _tmpHTML + _tmpHTMLAfter + wpulivesearch_tpl.pager_after_items;
 }
 
 /* Events
@@ -703,7 +703,38 @@ function wpulivesearch_pager_clickevent_target($target) {
     if (!$target) {
         return;
     }
-    var page_nb = parseInt($target.getAttribute('data-page'), 10);
+    var $pager = $target.parentNode,
+        _nb_pages = parseInt($pager.getAttribute('data-nbpages'), 10);
+
+    var page_nb = $target.getAttribute('data-page');
+    if (page_nb == 'next' || page_nb == 'prev') {
+        var $pages = document.querySelectorAll('[data-livepagenb]');
+
+        /* Extract current pager */
+        var currentPageNb = 0;
+        (function() {
+            for (var i = 0, len = $pages.length; i < len; i++) {
+                if ($pages[i].getAttribute('data-current') == '1') {
+                    currentPageNb = parseInt($pages[i].getAttribute('data-livepagenb'), 10);
+                }
+            }
+        }());
+
+        if (page_nb == 'next') {
+            page_nb = currentPageNb + 1;
+        }
+        if (page_nb == 'prev') {
+            page_nb = currentPageNb - 1;
+        }
+        if (page_nb < 0) {
+            page_nb = _nb_pages;
+        }
+        if (page_nb > _nb_pages) {
+            page_nb = 0;
+        }
+    }
+
+    page_nb = parseInt(page_nb, 10);
     if (wpulivesearch_settings.pager_load_more == '1') {
         wpulivesearch_set_load_more_content($target.parentNode, page_nb);
     }
@@ -733,8 +764,8 @@ function wpulivesearch_set_pager_current($item, page_nb) {
 function wpulivesearch_goto_page(page_nb) {
     'use strict';
 
-    var $page = document.querySelector('[data-livepagenb="' + page_nb + '"]'),
-        $pages = document.querySelectorAll('[data-livepagenb]');
+    var $pages = document.querySelectorAll('[data-livepagenb]'),
+        $page = document.querySelector('[data-livepagenb="' + page_nb + '"]');
 
     if (!$page) {
         console.error('The page #' + page_nb + ' has not been found. Maybe check the "before" template ?');
@@ -744,11 +775,14 @@ function wpulivesearch_goto_page(page_nb) {
     for (var i = 0, len = $pages.length; i < len; i++) {
         if (wpulivesearch_settings.pager_load_more == '1' && i < page_nb) {
             $pages[i].style.display = '';
+            $pages[i].setAttribute('data-current', '1');
             continue;
         }
+        $pages[i].setAttribute('data-current', '0');
         $pages[i].style.display = 'none';
     }
 
+    $page.setAttribute('data-current', '1');
     $page.style.display = '';
 
     wpulivesearch_lazyload_items($page.parentNode, page_nb);
