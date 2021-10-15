@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.17.1
+Version: 0.17.2
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.17.1';
+    private $plugin_version = '0.17.2';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -197,6 +197,9 @@ class WPULiveSearch {
             if (!isset($filter['has_view_all'])) {
                 $filter['has_view_all'] = false;
             }
+            if (!isset($filter['value_field'])) {
+                $filter['value_field'] = 'term_id';
+            }
             $filter['has_view_all'] = !!$filter['has_view_all'];
             if (!isset($filter['taxonomy'])) {
                 continue;
@@ -205,6 +208,7 @@ class WPULiveSearch {
             if (isset($filter['hide_empty'])) {
                 $hide_empty = $filter['hide_empty'];
             }
+
             $values = get_terms($filter['taxonomy'], array(
                 'hide_empty' => $hide_empty
             ));
@@ -214,12 +218,13 @@ class WPULiveSearch {
                     $filter['label_callback'] = 'name';
                 }
                 foreach ($values as $value) {
-                    $label = $value->name;
+                    $value = get_object_vars($value);
+                    $label = $value['name'];
                     if ($filter['label_callback'] != 'name' && function_exists($filter['label_callback'])) {
                         $label = call_user_func($filter['label_callback'], $value);
                     }
                     $filter['values'][] = array(
-                        'value' => $value->term_id,
+                        'value' => $value[$filter['value_field']],
                         'label' => $label
                     );
                 }
