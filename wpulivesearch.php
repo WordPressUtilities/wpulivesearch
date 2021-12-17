@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.17.2
+Version: 0.18.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.17.2';
+    private $plugin_version = '0.18.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -108,7 +108,7 @@ class WPULiveSearch {
 
         $wpulivesearch_datas = json_encode($new_datas['values']);
 
-        $wpulivesearch_datas_js = 'var wpulivesearch_datas=' . $wpulivesearch_datas . ';';
+        $wpulivesearch_datas_js = 'window.wpulivesearch_datas=' . $wpulivesearch_datas . ';';
 
         /* Load datas from an external file */
         if ($this->settings['load_datas_in_file']) {
@@ -128,8 +128,8 @@ class WPULiveSearch {
             echo '<script>document.addEventListener("DOMContentLoaded",function(){wpulivesearch_trigger_datas_ready()});</script>';
         }
         echo '<script>';
-        echo 'var wpulivesearch_filters=' . json_encode($filters) . ';';
-        echo 'var wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
+        echo 'window.wpulivesearch_filters=' . json_encode($filters) . ';';
+        echo 'window.wpulivesearch_datas_keys=' . json_encode($new_datas['keys']) . ';';
         echo '</script>';
         echo '<div class="form-wpulivesearch__wrapper">';
         do_action('wpulivesearch_formwrapper_before_form');
@@ -432,7 +432,7 @@ class WPULiveSearch {
             )
         );
 
-        $html = 'var wpulivesearch_tpl = {};';
+        $html = 'window.wpulivesearch_tpl = {};';
         foreach ($default_templates as $key => $value) {
             $value = isset($templates[$key]) ? $templates[$key] : $value['html'];
             /* Check if templates have their required attributes */
@@ -443,7 +443,7 @@ class WPULiveSearch {
                     }
                 }
             }
-            $html .= 'wpulivesearch_tpl.' . $key . '=' . $this->get_html_as_js_content($value) . ';';
+            $html .= 'window.wpulivesearch_tpl.' . $key . '=' . $this->get_html_as_js_content($value) . ';';
         }
 
         return '<script>' . $html . '</script>';
