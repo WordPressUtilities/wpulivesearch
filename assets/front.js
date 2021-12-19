@@ -4,7 +4,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
     'use strict';
 
-    if (typeof wpulivesearch_datas === 'undefined') {
+    if (typeof wpulivesearch_datas === 'undefined' || !document.getElementById('wpulivesearch_results')) {
         return;
     }
 
@@ -205,7 +205,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     check_hash();
 
     /* Default content */
-    $results_container.innerHTML = wpulivesearch_tpl.default;
+    update_results_container();
 
     $results_container.dispatchEvent(new Event('wpulivesearch_results_ready'));
 
@@ -220,7 +220,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     function clear_search() {
         $searchform.setAttribute('data-changed', '0');
         $results_container.dispatchEvent(new Event('wpulivesearch_clear_search'));
-        $results_container.innerHTML = wpulivesearch_tpl.default;
+        update_results_container();
         (function($filters) {
             setTimeout(function() {
                 var _reset = wpulivesearch_reset_active_filters($filters);
@@ -395,7 +395,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             _html = wpulivesearch_tpl.before_default + _html + wpulivesearch_tpl.after_default;
         }
 
-        $results_container.innerHTML = _html;
+        update_results_container(_html);
 
         var event = new Event('wpulivesearch_results');
         event.wpulivesearch = {
@@ -429,6 +429,16 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
         /* Set dynamic URL */
         update_hash(_filtersValues);
+    }
+
+    function update_results_container(_content) {
+        if (!_content) {
+            _content = wpulivesearch_tpl.default;
+        }
+        $results_container.innerHTML = _content;
+
+        /* Trigger an event */
+        window.dispatchEvent(new Event('wpulivesearch_updated_content'));
     }
 
     function update_hash(_filtersValues) {
@@ -606,7 +616,6 @@ function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) 
 
         if (_check[0]) {
             $mainLabel.setAttribute('data-enabled', 1);
-
             $mainLabel.innerHTML = _check[0].parentNode.querySelector('label').innerHTML;
         }
         else {
