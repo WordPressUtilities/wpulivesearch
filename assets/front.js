@@ -460,8 +460,13 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         }
 
         /* Filters */
+        var originalFilter;
         for (var i = 0, len = _filtersValues.length; i < len; i++) {
             if (!_filtersValues[i].value.length) {
+                continue;
+            }
+            originalFilter = wpulivesearch_filters[_filtersValues[i].id];
+            if (!originalFilter.enabled_in_url) {
                 continue;
             }
             if (_hash) {

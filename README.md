@@ -53,6 +53,7 @@ $filters = array(
         'input_type' => 'radio',
         'view_all_label' => 'View all',
         'has_view_all' => true,
+        'enabled_in_url' => false,
         'values' => array(
             array(
                 'label' => 'My value',

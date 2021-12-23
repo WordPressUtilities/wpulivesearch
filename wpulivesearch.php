@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.19.0
+Version: 0.19.1
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.19.0';
+    private $plugin_version = '0.19.1';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -191,16 +191,27 @@ class WPULiveSearch {
 
     public function build_filters($filters) {
         foreach ($filters as &$filter) {
+
+            /* View all */
             if (!isset($filter['view_all_label'])) {
                 $filter['view_all_label'] = __('View all', 'wpulivesearch');
             }
             if (!isset($filter['has_view_all'])) {
                 $filter['has_view_all'] = false;
             }
+            $filter['has_view_all'] = !!$filter['has_view_all'];
+
+            /* Visible in URL */
+            if (!isset($filter['enabled_in_url'])) {
+                $filter['enabled_in_url'] = false;
+            }
+            $filter['enabled_in_url'] = !!$filter['enabled_in_url'];
+
+            /* Use term_id or slug */
             if (!isset($filter['value_field'])) {
                 $filter['value_field'] = 'term_id';
             }
-            $filter['has_view_all'] = !!$filter['has_view_all'];
+
             if (!isset($filter['taxonomy'])) {
                 continue;
             }
@@ -208,7 +219,6 @@ class WPULiveSearch {
             if (isset($filter['hide_empty'])) {
                 $hide_empty = $filter['hide_empty'];
             }
-
             $values = get_terms($filter['taxonomy'], array(
                 'hide_empty' => $hide_empty
             ));
