@@ -236,6 +236,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 }
             }, 50);
         }($filters));
+        /* Reset subfilters */
+        wpulivesearch_clear_filter_subvalues();
     }
 
     function live_search() {
@@ -486,6 +488,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         update_hash();
     }, 1);
 
+    wpulivesearch_setup_filter_subvalues($filters);
+
     document.dispatchEvent(new Event('wpulivesearch_results_loaded'));
 
 });
@@ -493,6 +497,40 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 /* ----------------------------------------------------------
   Active filters
 ---------------------------------------------------------- */
+
+/* Subfilters
+-------------------------- */
+
+function wpulivesearch_setup_filter_subvalues($filters) {
+    Array.prototype.forEach.call($filters, function(el, i) {
+        el.addEventListener('keydown', filter_event);
+        el.addEventListener('keyup', filter_event);
+    });
+
+    function filter_event(e) {
+        if (e.target.getAttribute('name') != 'value_filter') {
+            return;
+        }
+        wpulivesearch_filter_subvalues(e.target);
+    }
+}
+
+function wpulivesearch_filter_subvalues($subfilter) {
+    var _val = wpulivesearch_clean_value($subfilter.value),
+        $items = $subfilter.parentNode.querySelectorAll('.values .value label');
+
+    for (i = 0; i < $items.length; i++) {
+        txtValue = wpulivesearch_clean_value($items[i].textContent || $items[i].innerText);
+        $items[i].setAttribute('data-filtervaluehidden', txtValue.indexOf(_val) > -1 ? '0' : '1');
+    }
+}
+
+function wpulivesearch_clear_filter_subvalues() {
+    var $items = document.querySelectorAll('[data-filtervaluehidden]');
+    for (var i = 0, len = $items.length; i < len; i++) {
+        $items[i].removeAttribute('data-filtervaluehidden');
+    }
+}
 
 /* Sort
 -------------------------- */

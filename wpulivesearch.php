@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.19.1
+Version: 0.20.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.19.1';
+    private $plugin_version = '0.20.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -334,11 +334,17 @@ class WPULiveSearch {
             $_label = esc_attr($value['label']);
         }
         $is_multiple = isset($value['multiple']) && $value['multiple'];
+
         $value['required'] = isset($value['required']) && $value['required'];
         $html .= '<div class="wpulivesearch-filter__item">';
         if (isset($value['multiple']) && $value['multiple']) {
+            $has_value_filter = isset($value['value_filter']) && $value['value_filter'];
+            $value_filter_label = $value['value_filter_label'] ?? __('Filter values', 'wpulivesearch');
             $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--multiple" data-multiple="1" data-label="' . esc_attr($_label) . '" data-key="' . $key . '">';
             $html .= '<label class="main-label">' . $_label . '</label>';
+            if($has_value_filter){
+                $html .= '<input type="text" placeholder="' . esc_attr($value_filter_label) . '" name="value_filter" value="" />';
+            }
             $html .= '</div>';
         } else {
             $default_value = false;
@@ -362,7 +368,6 @@ class WPULiveSearch {
                 $html .= '<option ' . ($value['required'] ? 'disabled="disabled"' : '') . ' value="">' . $_label . '</option>';
                 $html .= '</select>';
             }
-
         }
         $html .= '</div>';
 
