@@ -923,41 +923,15 @@ function wpulivesearch_lazyload_items($wrapper, page_nb) {
 
 function wpulivesearch_extract_values_from_filters($filters) {
     'use strict';
-    var i2, len2, _tmpValue, _checkList;
-
     var _filtersValues = [];
 
     for (var i = 0, len = $filters.length; i < len; i++) {
-        _tmpValue = [];
-        if ($filters[i].tagName == 'SELECT') {
-            if ($filters[i].options[$filters[i].selectedIndex].value) {
-                _tmpValue = [$filters[i].options[$filters[i].selectedIndex].value];
-            }
-        }
-        else {
-            _checkList = $filters[i].querySelectorAll('input[type="checkbox"]');
-            if (_checkList.length) {
-                for (i2 = 0, len2 = _checkList.length; i2 < len2; i2++) {
-                    if (_checkList[i2].checked) {
-                        _tmpValue.push(_checkList[i2].value);
-                    }
-                }
-            }
-            else {
-                _checkList = $filters[i].querySelectorAll('input[type="radio"]');
-                for (i2 = 0, len2 = _checkList.length; i2 < len2; i2++) {
-                    if (_checkList[i2].checked) {
-                        _tmpValue = _checkList[i2].value;
-                    }
-                }
-            }
-        }
-
         _filtersValues[i] = {
-            value: _tmpValue,
+            value: Array.prototype.slice.call($filters[i].querySelectorAll('option:checked, input[type="checkbox"]:checked, input[type="radio"]:checked'), 0).map(function(v) {
+                return v.value;
+            }),
             id: $filters[i].getAttribute('data-key')
         };
-
     }
 
     return _filtersValues;
@@ -1080,7 +1054,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
         _item_id = 'filter-' + _key + _value.values[_val].value;
         _selected = !!_value.values[_val].selected || _initial.indexOf(_value.values[_val].value) >= 0;
         _extra_attr = _value.values[_val].extra ? ' data-extra="' + encodeURI(_value.values[_val].extra) + '"' : '';
-        if (is_multiple) {
+        if (is_multiple && _value.input_type != 'select') {
             _html += '<div data-hasitems="' + _value.values[_val].hasitems + '" class="value"><input' + _extra_attr + ' id="' + _item_id + '" ' + (_selected ? 'checked="checked"' : '') + ' type="checkbox" name="' + _key + '[]" value="' + _value.values[_val].value + '" /><label for="' + _item_id + '">' + _value.values[_val].label + '</label></div>';
         }
         else {
