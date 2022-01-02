@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.20.1
+Version: 0.20.2
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.20.1';
+    private $plugin_version = '0.20.2';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -366,7 +366,7 @@ class WPULiveSearch {
                 $html .= '</div>';
             } else {
                 $html .= '<label for="wpulivesearch_filter_' . $key . '" class="main-label">' . $_label . '</label>';
-                $html .= '<select ' . ($is_multiple ? 'multiple' : '') . ' ' . ($default_value !== false ? ' data-default="' . esc_attr($default_value) . '"' : '') . ' class="wpulivesearch-filter wpulivesearch-filter--select" id="wpulivesearch_filter_' . $key . '" name="' . $key . '' . ($is_multiple ? '[]' : '') . '" data-key="' . $key . '">';
+                $html .= '<select data-label="' . esc_attr($_label) . '" ' . ($is_multiple ? 'multiple' : '') . ' ' . ($default_value !== false ? ' data-default="' . esc_attr($default_value) . '"' : '') . ' class="wpulivesearch-filter wpulivesearch-filter--select" id="wpulivesearch_filter_' . $key . '" name="' . $key . '' . ($is_multiple ? '[]' : '') . '" data-key="' . $key . '">';
                 $html .= '<option ' . ($value['required'] ? 'disabled="disabled"' : '') . ' value="">' . $_label . '</option>';
                 $html .= '</select>';
             }
