@@ -996,6 +996,10 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
         }
         filter_id = _filtersValues[i].id;
 
+        if (filter_values.length == 1 && filter_values[0] == '') {
+            continue;
+        }
+
         /* Item dont have the key : invalid / false */
         if (!_item.filters.hasOwnProperty(filter_id)) {
             return false;
