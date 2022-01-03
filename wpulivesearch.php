@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.20.2
+Version: 0.20.3
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.20.2';
+    private $plugin_version = '0.20.3';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -334,6 +334,9 @@ class WPULiveSearch {
             $_label = esc_attr($value['label']);
         }
         $is_multiple = isset($value['multiple']) && $value['multiple'];
+        if(!isset($value['input_type'])){
+            $value['input_type'] = false;
+        }
 
         $value['required'] = isset($value['required']) && $value['required'];
 
@@ -356,7 +359,7 @@ class WPULiveSearch {
             }
             $html .= '</div>';
         } else {
-            if (isset($value['input_type']) && $value['input_type'] == 'radio') {
+            if ($value['input_type'] == 'radio') {
                 $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--radio" data-multiple="0" data-label="' . esc_attr($_label) . '"';
                 if ($value['has_view_all']) {
                     $html .= ' data-view-all-label="' . esc_attr($value['view_all_label']) . '"';
