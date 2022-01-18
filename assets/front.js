@@ -64,9 +64,14 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
             /* Parse filters */
             (function() {
+                window.wpulivesearch_filters_labels = {};
                 var _filter, _filterVal;
                 for (_filter in wpulivesearch_filters) {
+                    if (!window.wpulivesearch_filters_labels[_filter]) {
+                        window.wpulivesearch_filters_labels[_filter] = {};
+                    }
                     for (_filterVal in wpulivesearch_filters[_filter].values) {
+                        window.wpulivesearch_filters_labels[_filter][wpulivesearch_filters[_filter].values[_filterVal].value] = wpulivesearch_filters[_filter].values[_filterVal].label;
                         if (_existingFilters[_filter]) {
                             /* Find if there is at least one item with this filter value */
                             wpulivesearch_filters[_filter].values[_filterVal].hasitems = _existingFilters[_filter].indexOf(wpulivesearch_filters[_filter].values[_filterVal].value.toString()) != -1;
@@ -74,6 +79,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                     }
                 }
             }());
+
         }());
 
         /* Add manual fulltext keys */
@@ -1032,10 +1038,30 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
 function wpulivesearch_get_filled_template(_tpl_id, values) {
     'use strict';
     var _tmp_result_html = wpulivesearch_tpl[_tpl_id];
+
     for (var _value in values) {
+        /* Do not parse some types */
+        if (_value == 'filters' || _value == 'fulltext') {
+            continue;
+        }
+
+        /* Empty values */
         if (!values[_value] && values[_value] !== '0' && values[_value] !== 0) {
             values[_value] = '';
         }
+
+        /* Handle array of values */
+        if (typeof values[_value] == 'object' && values[_value][0]) {
+            values[_value] = values[_value].map(function(_tmp_obj_value) {
+                if (window.wpulivesearch_filters_labels[_value]) {
+                    _tmp_obj_value = window.wpulivesearch_filters_labels[_value][_tmp_obj_value];
+                }
+                return _tmp_obj_value;
+            });
+            values[_value] = '<span>' + values[_value].join('</span><span>') + '</span>';
+        }
+
+        /* Handle textual values */
         _tmp_result_html = _tmp_result_html.replace(new RegExp('{{' + _value + '}}', 'g'), values[_value]);
     }
     return _tmp_result_html;
