@@ -687,6 +687,10 @@ function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) 
 
 function wpulivesearch_set_mainlabel_html($el, $mainLabel, _nbEnabled, _visibleValues) {
     'use strict';
+    $mainLabel.setAttribute('data-enabled', _nbEnabled);
+    if (wpulivesearch_settings.view_selected_hide_values_label) {
+        return;
+    }
     var _beforeLabel = wpulivesearch_settings.view_selected__before;
     var _afterLabel = wpulivesearch_settings.view_selected__after;
     var _displayLabel = (_nbEnabled > 0 ? _beforeLabel + _nbEnabled + _afterLabel : '');
@@ -694,7 +698,6 @@ function wpulivesearch_set_mainlabel_html($el, $mainLabel, _nbEnabled, _visibleV
         _displayLabel = _beforeLabel + _visibleValues.join(',') + _afterLabel;
     }
     $mainLabel.innerHTML = $el.getAttribute('data-label') + ' ' + _displayLabel;
-    $mainLabel.setAttribute('data-enabled', _nbEnabled);
 }
 
 /* ----------------------------------------------------------

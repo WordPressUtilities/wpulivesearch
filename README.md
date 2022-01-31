@@ -105,6 +105,8 @@ function testtest_wpulivesearch_settings($settings = array()) {
     $settings['inclusive_search'] = false;
     /* Display selected values in multiple selectors label */
     $settings['view_selected_multiple_values'] = false;
+    /* Hide all values (number of results or values) displayed in a main label */
+    $settings['view_selected_hide_values_label'] = false;
     /* Display only value in simple selectors label */
     $settings['view_selected_simple_replace_label'] = false;
     return $settings;
