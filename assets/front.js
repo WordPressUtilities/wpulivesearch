@@ -612,7 +612,7 @@ function wpulivesearch_set_active_filters__select(active_filters, $el, force) {
     'use strict';
     var op = $el.getElementsByTagName("option"),
         _isMultiple = $el.getAttribute('multiple') !== null,
-        $mainLabel = $el.parentNode.querySelector('.main-label'),
+        $mainLabel = $el.parentNode.parentNode.querySelector('.main-label'),
         _isHiddenValue,
         _visibleValues = [],
         _nbEnabled = 0;
