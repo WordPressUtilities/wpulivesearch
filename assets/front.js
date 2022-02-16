@@ -415,7 +415,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
         var hasFilter = false;
         for (var _filterItem in _filtersValues) {
-            if (_filtersValues[_filterItem].value.length > 0) {
+            if (_filtersValues[_filterItem].value.length > 0 && _filtersValues[_filterItem].value[0]) {
                 hasFilter = true;
             }
         }
