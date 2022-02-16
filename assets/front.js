@@ -420,6 +420,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             }
         }
         $searchform.setAttribute('data-hasfilter', hasFilter ? '1' : '0');
+        $searchform.setAttribute('data-hassearch', _hasFullTextValue ? '1' : '0');
 
         if (initial_form != '1') {
             $searchform.setAttribute('data-changed', '1');
