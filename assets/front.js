@@ -412,6 +412,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             results: _results
         };
         $results_container.dispatchEvent(event);
+        $results_container.setAttribute('data-wpulivesearch-counter', _counter);
 
         var hasFilter = false;
         for (var _filterItem in _filtersValues) {
