@@ -405,21 +405,26 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
         update_results_container(_html);
 
-        var event = new Event('wpulivesearch_results');
-        event.wpulivesearch = {
-            filters: _filtersValues,
-            counter: _counter,
-            results: _results
-        };
-        $results_container.dispatchEvent(event);
-        $results_container.setAttribute('data-wpulivesearch-counter', _counter);
-
         var hasFilter = false;
         for (var _filterItem in _filtersValues) {
             if (_filtersValues[_filterItem].value.length > 0 && _filtersValues[_filterItem].value[0]) {
                 hasFilter = true;
             }
         }
+
+        var event = new Event('wpulivesearch_results');
+        event.wpulivesearch = {
+            filters: _filtersValues,
+            counter: _counter,
+            results: _results,
+            element: $results_container,
+            hasFilter: hasFilter,
+            hasFullTextValue: _hasFullTextValue,
+        };
+        $results_container.dispatchEvent(event);
+        $results_container.setAttribute('data-wpulivesearch-counter', _counter);
+        document.body.dispatchEvent(event);
+
         $searchform.setAttribute('data-hasfilter', hasFilter ? '1' : '0');
         $searchform.setAttribute('data-hassearch', _hasFullTextValue ? '1' : '0');
 
