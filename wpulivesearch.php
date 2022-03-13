@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.22.0
+Version: 0.23.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.22.0';
+    private $plugin_version = '0.23.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -336,18 +336,27 @@ class WPULiveSearch {
             $_label = esc_attr($value['label']);
         }
         $is_multiple = isset($value['multiple']) && $value['multiple'];
-        if(!isset($value['input_type'])){
+        if (!isset($value['input_type'])) {
             $value['input_type'] = false;
         }
 
         $value['required'] = isset($value['required']) && $value['required'];
 
         $default_value = false;
-        foreach ($value['values'] as $i => $_value) {
-            if (isset($_value['selected']) && $_value['selected']) {
-                $default_value = $i;
-                continue;
+        if (isset($value['values']) && is_array($value['values'])) {
+            foreach ($value['values'] as $i => $_value) {
+                if (isset($_value['selected']) && $_value['selected']) {
+                    $default_value = $i;
+                    continue;
+                }
             }
+        }
+
+        if (!isset($value['compare'])) {
+            $value['compare'] = '>';
+        }
+        if (!isset($value['default_value'])) {
+            $value['default_value'] = 0;
         }
 
         $html .= '<div class="wpulivesearch-filter__item">';
@@ -361,7 +370,8 @@ class WPULiveSearch {
             }
             $html .= '</div>';
         } else {
-            if ($value['input_type'] == 'radio') {
+            switch ($value['input_type']) {
+            case 'radio':
                 $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--radio" data-multiple="0" data-label="' . esc_attr($_label) . '"';
                 if ($value['has_view_all']) {
                     $html .= ' data-view-all-label="' . esc_attr($value['view_all_label']) . '"';
@@ -369,12 +379,21 @@ class WPULiveSearch {
                 $html .= ' data-key="' . $key . '">';
                 $html .= '<label class="main-label">' . $_label . '</label>';
                 $html .= '</div>';
-            } else {
+                break;
+            case 'number':
+                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--number" data-compare="' . esc_attr($value['compare']) . '" data-type="number" data-multiple="0" data-label="' . esc_attr($_label) . '"';
+                $html .= ' data-key="' . $key . '">';
+                $html .= '<label class="main-label">' . $_label . '</label>';
+                $html .= '<input type="number" id="wpulivesearch_filter_' . $key . '" name="' . $key . '" data-key="' . $key . '" value="' . esc_attr($value['default_value']) . '" />';
+                $html .= '</div>';
+                break;
+            default:
                 $html .= '<label for="wpulivesearch_filter_' . $key . '" class="main-label">' . $_label . '</label>';
                 $html .= '<div class="selector"><select data-label="' . esc_attr($_label) . '" ' . ($is_multiple ? 'multiple' : '') . ' ' . ($default_value !== false ? ' data-default="' . esc_attr($default_value) . '"' : '') . ' class="wpulivesearch-filter wpulivesearch-filter--select" id="wpulivesearch_filter_' . $key . '" name="' . $key . '' . ($is_multiple ? '[]' : '') . '" data-key="' . $key . '">';
                 $html .= '<option ' . ($value['required'] ? 'disabled="disabled"' : '') . ' value="">' . $_label . '</option>';
                 $html .= '</select></div>';
             }
+
         }
         $html .= '</div>';
 

@@ -28,13 +28,16 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             wpulivesearch_datas[i] = set_fulltext_values(wpulivesearch_datas[i]);
 
             for (_filter in wpulivesearch_filters) {
-                if (!wpulivesearch_datas[i][_filter]) {
+                if (!wpulivesearch_datas[i].hasOwnProperty(_filter)) {
                     console.error('The filter "' + _filter + '" should be defined in this data element.');
                     continue;
                 }
 
                 /* Store filters */
                 wpulivesearch_datas[i].filters[_filter] = wpulivesearch_datas[i][_filter].toString().split(',');
+                if (wpulivesearch_filters[_filter].input_type == "number") {
+                    wpulivesearch_datas[i].filters[_filter] = parseInt(wpulivesearch_datas[i][_filter], 10);
+                }
 
                 /* Replace fulltext filters */
                 if (!wpulivesearch_datas[i][_filter] || !wpulivesearch_filters[_filter].fulltext) {
@@ -262,6 +265,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             _filtersValues = [],
             _hasFullText,
             _hasFilters,
+            _hasCompare,
             i,
             len;
 
@@ -299,6 +303,17 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             if (wpulivesearch_filters_search(_filtersValues, wpulivesearch_datas[i])) {
                 _results[i] = wpulivesearch_datas[i];
                 _hasFilters = true;
+            }
+
+            /* Compare search */
+            _hasCompare = false;
+            if (wpulivesearch_filters_compare($filters, _filtersValues, wpulivesearch_datas[i])) {
+                _results[i] = wpulivesearch_datas[i];
+                _hasCompare = true;
+            }
+            else {
+                delete _results[i];
+                continue;
             }
 
             if (wpulivesearch_settings.fulltext_and_filters && typeof _results[i] !== 'undefined') {
@@ -964,18 +979,60 @@ function wpulivesearch_lazyload_items($wrapper, page_nb) {
 
 function wpulivesearch_extract_values_from_filters($filters) {
     'use strict';
-    var _filtersValues = [];
+    var _filtersValues = [],
+        _tmpVal;
 
     for (var i = 0, len = $filters.length; i < len; i++) {
+
+        switch ($filters[i].getAttribute('data-type')) {
+            case 'number':
+                _tmpVal = [parseInt($filters[i].querySelector('input[type="number"]').value, 10)];
+                break;
+            default:
+                _tmpVal = Array.prototype.slice.call($filters[i].querySelectorAll('option:checked, input[type="checkbox"]:checked, input[type="radio"]:checked'), 0).map(function(v) {
+                    return v.value;
+                });
+        }
+
         _filtersValues[i] = {
-            value: Array.prototype.slice.call($filters[i].querySelectorAll('option:checked, input[type="checkbox"]:checked, input[type="radio"]:checked'), 0).map(function(v) {
-                return v.value;
-            }),
+            value: _tmpVal,
+            type: $filters[i].getAttribute('data-type'),
+            compare: $filters[i].getAttribute('data-compare'),
             id: $filters[i].getAttribute('data-key')
         };
     }
 
     return _filtersValues;
+}
+
+/* ----------------------------------------------------------
+  Compare methods
+---------------------------------------------------------- */
+
+function wpulivesearch_filters_compare($filters, _filtersValues, _item) {
+    var _refValue,
+        _itemValue;
+    for (i = 0, len = _filtersValues.length; i < len; i++) {
+        if (!_filtersValues[i].compare || !_filtersValues[i].type || _filtersValues[i].type != 'number') {
+            continue;
+        }
+        _refValue = _filtersValues[i].value[0];
+        _itemValue = _item.filters[_filtersValues[i].id];
+
+        if (_filtersValues[i].compare == '>' && _itemValue > _refValue) {
+            return false;
+        }
+        if (_filtersValues[i].compare == '<' && _itemValue < _refValue) {
+            return false;
+        }
+        if (_filtersValues[i].compare == '>=' && _itemValue >= _refValue && (_itemValue != 0 || _refValue != 0)) {
+            return false;
+        }
+        if (_filtersValues[i].compare == '<=' && _itemValue <= _refValue && (_itemValue != 0 || _refValue != 0)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /* ----------------------------------------------------------
@@ -1008,6 +1065,9 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
     for (i = 0, len = _filtersValues.length; i < len; i++) {
         filter_values = _filtersValues[i].value;
         if (!filter_values || filter_values.length < 1) {
+            continue;
+        }
+        if (_filtersValues[i].type == 'number') {
             continue;
         }
         filter_id = _filtersValues[i].id;

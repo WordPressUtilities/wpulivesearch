@@ -64,6 +64,15 @@ $filters = array(
                 'value' => 'other-value'
             )
         )
+    ),
+    /* Minimal value */
+    'salary_min'=> array(
+        'enabled_in_url' => false,
+        'multiple' => false,
+        'input_type' => 'number',
+        'label' => 'Minimal salary',
+        'compare' => '<=',
+        'default_value' => 0
     )
 );
 
