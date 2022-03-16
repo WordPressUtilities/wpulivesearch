@@ -845,6 +845,7 @@ function wpulivesearch_pager_clickevent(e) {
     }
     e.preventDefault();
     wpulivesearch_pager_clickevent_target($target);
+    document.getElementById('wpulivesearch_results').dispatchEvent(new Event('wpulivesearch_pager_clickevent'));
 }
 
 function wpulivesearch_pager_clickevent_target($target) {
