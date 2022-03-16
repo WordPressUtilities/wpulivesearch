@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.23.0
+Version: 0.23.1
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.23.0';
+    private $plugin_version = '0.23.1';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -381,7 +381,7 @@ class WPULiveSearch {
                 $html .= '</div>';
                 break;
             case 'number':
-                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--number" data-compare="' . esc_attr($value['compare']) . '" data-type="number" data-multiple="0" data-label="' . esc_attr($_label) . '"';
+                $html .= '<div class="wpulivesearch-filter wpulivesearch-filter--number" data-compare="' . esc_attr($value['compare']) . '" data-initial-value="' . esc_attr($value['default_value']) . '" data-type="number" data-multiple="0" data-label="' . esc_attr($_label) . '"';
                 $html .= ' data-key="' . $key . '">';
                 $html .= '<label class="main-label">' . $_label . '</label>';
                 $html .= '<input type="number" id="wpulivesearch_filter_' . $key . '" name="' . $key . '" data-key="' . $key . '" value="' . esc_attr($value['default_value']) . '" />';

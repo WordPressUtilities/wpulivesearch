@@ -422,7 +422,15 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 
         var hasFilter = false;
         for (var _filterItem in _filtersValues) {
-            if (_filtersValues[_filterItem].value.length > 0 && _filtersValues[_filterItem].value[0]) {
+            /* Ignore if no value */
+            if (!_filtersValues[_filterItem].value[0]) {
+                continue;
+            }
+            /* Ignore if number filter with initial value pre-filled */
+            if(_filtersValues[_filterItem].type == 'number' && $filters[_filterItem].getAttribute('data-initial-value').toString() == _filtersValues[_filterItem].value[0].toString()){
+                continue;
+            }
+            if (_filtersValues[_filterItem].value.length > 0) {
                 hasFilter = true;
             }
         }
