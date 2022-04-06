@@ -202,7 +202,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                     }
                 }
                 /* Set values for multiple selects */
-                if ($filter.tagName == 'SELECT' && $filter.multiple) {
+                if ($filter && $filter.tagName == 'SELECT' && $filter.multiple) {
                     for (var i = 0; i < $filter.options.length; i++) {
                         $filter.options[i].selected = _values.indexOf(encodeURIComponent($filter.options[i].value)) >= 0;
                     }
