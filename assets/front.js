@@ -180,7 +180,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
         _pause_livesearch = true;
         var _pageNb = false;
 
-        /* _hash_parts - i */
+        /* For each filter found in hashtag */
         for (var i = 0, len = _hash_parts.length; i < len; i++) {
             _hash_filter_tmp = _hash_parts[i].split(':');
             if (!_hash_filter_tmp[1]) {
@@ -194,10 +194,17 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 var _id = _hash_filter_tmp[0];
                 var _values = _hash_filter_tmp[1].split(',');
                 var _tmp_post;
+                var $filter = document.getElementById('wpulivesearch_filter_' + _id);
                 for (var i = 0, len = _values.length; i < len; i++) {
                     _tmp_post = document.getElementById('filter-' + _id + _values[i]);
                     if (_tmp_post) {
                         _tmp_post.checked = true;
+                    }
+                }
+                /* Set values for multiple selects */
+                if ($filter.tagName == 'SELECT' && $filter.multiple) {
+                    for (var i = 0; i < $filter.options.length; i++) {
+                        $filter.options[i].selected = _values.indexOf(encodeURIComponent($filter.options[i].value)) >= 0;
                     }
                 }
             }());
@@ -427,7 +434,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 continue;
             }
             /* Ignore if number filter with initial value pre-filled */
-            if(_filtersValues[_filterItem].type == 'number' && $filters[_filterItem].getAttribute('data-initial-value').toString() == _filtersValues[_filterItem].value[0].toString()){
+            if (_filtersValues[_filterItem].type == 'number' && $filters[_filterItem].getAttribute('data-initial-value').toString() == _filtersValues[_filterItem].value[0].toString()) {
                 continue;
             }
             if (_filtersValues[_filterItem].value.length > 0) {
