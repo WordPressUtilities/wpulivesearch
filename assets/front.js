@@ -684,7 +684,7 @@ function wpulivesearch_set_active_filters__select(active_filters, $el, force) {
 
 function wpulivesearch_set_active_filters__multiple(active_filters, $el, force) {
     'use strict';
-    var $opts = $el.querySelectorAll('input[type="checkbox"]'),
+    var $opts = $el.querySelectorAll('input[type="checkbox"],input[type="radio"]:not([data-view-all="1"])'),
         $mainLabel = $el.querySelector('.main-label'),
         _isHiddenValue,
         _itemParent,
@@ -1187,7 +1187,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
                 _has_default_checked = false;
             }
         }
-        _html += '<div class="viewall"><input id="' + _item_id + '" ' + (_has_default_checked ? 'checked="checked"' : '') + ' type="radio" name="' + _key + '" value="" /><label for="' + _item_id + '">' + _value.view_all_label + '</label></div>';
+        _html += '<div class="viewall"><input id="' + _item_id + '" ' + (_has_default_checked ? 'checked="checked"' : '') + ' data-view-all="1" type="radio" name="' + _key + '" value="" /><label for="' + _item_id + '">' + _value.view_all_label + '</label></div>';
     }
 
     /* Parse values */
