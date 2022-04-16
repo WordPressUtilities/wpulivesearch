@@ -521,7 +521,9 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             if (typeof tmp_values != 'string') {
                 tmp_values = tmp_values.join(',');
             }
-            _hash += _filtersValues[i].id + ':' + tmp_values;
+            if(tmp_values){
+                _hash += _filtersValues[i].id + ':' + tmp_values;
+            }
         }
         history.replaceState(null, null, _hash ? '#' + _hash : ' ');
         _pause_hash = true;
