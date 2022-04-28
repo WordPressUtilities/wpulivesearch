@@ -1030,7 +1030,7 @@ function wpulivesearch_extract_values_from_filters($filters) {
 function wpulivesearch_filters_compare($filters, _filtersValues, _item) {
     var _refValue,
         _itemValue;
-    for (i = 0, len = _filtersValues.length; i < len; i++) {
+    for (var i = 0, len = _filtersValues.length; i < len; i++) {
         if (!_filtersValues[i].compare || !_filtersValues[i].type || _filtersValues[i].type != 'number') {
             continue;
         }
