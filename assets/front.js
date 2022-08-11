@@ -1,7 +1,6 @@
-/* globals wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_datas_keys, wpulivesearch_settings */
+/* globals wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_datas_keys, wpulivesearch_settings, wpulivesearch_tpl, wpulivesearch_get_filled_template__before_items, wpulivesearch_get_filled_template__after_items, wpulivesearch_get_filled_template__before_item, wpulivesearch_get_filled_template__after_item */
 
 document.addEventListener('wpulivesearch_datas_ready', function() {
-
     'use strict';
 
     if (typeof wpulivesearch_datas === 'undefined' || !document.getElementById('wpulivesearch_results')) {
@@ -203,8 +202,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 }
                 /* Set values for multiple selects */
                 if ($filter && $filter.tagName == 'SELECT' && $filter.multiple) {
-                    for (var i = 0; i < $filter.options.length; i++) {
-                        $filter.options[i].selected = _values.indexOf(encodeURIComponent($filter.options[i].value)) >= 0;
+                    for (var y = 0; y < $filter.options.length; y++) {
+                        $filter.options[y].selected = _values.indexOf(encodeURIComponent($filter.options[y].value)) >= 0;
                     }
                 }
             }());
@@ -521,7 +520,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             if (typeof tmp_values != 'string') {
                 tmp_values = tmp_values.join(',');
             }
-            if(tmp_values){
+            if (tmp_values) {
                 _hash += _filtersValues[i].id + ':' + tmp_values;
             }
         }
@@ -547,7 +546,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
 -------------------------- */
 
 function wpulivesearch_setup_filter_subvalues($filters) {
-    Array.prototype.forEach.call($filters, function(el, i) {
+    'use strict';
+    Array.prototype.forEach.call($filters, function(el) {
         el.addEventListener('keydown', filter_event);
         el.addEventListener('keyup', filter_event);
     });
@@ -561,16 +561,19 @@ function wpulivesearch_setup_filter_subvalues($filters) {
 }
 
 function wpulivesearch_filter_subvalues($subfilter) {
+    'use strict';
     var _val = wpulivesearch_clean_value($subfilter.value),
-        $items = $subfilter.parentNode.querySelectorAll('.values .value label');
+        $items = $subfilter.parentNode.querySelectorAll('.values .value label'),
+        txtValue;
 
-    for (i = 0; i < $items.length; i++) {
+    for (var i = 0; i < $items.length; i++) {
         txtValue = wpulivesearch_clean_value($items[i].textContent || $items[i].innerText);
         $items[i].setAttribute('data-filtervaluehidden', txtValue.indexOf(_val) > -1 ? '0' : '1');
     }
 }
 
 function wpulivesearch_clear_filter_subvalues() {
+    'use strict';
     var $items = document.querySelectorAll('[data-filtervaluehidden]');
     for (var i = 0, len = $items.length; i < len; i++) {
         $items[i].removeAttribute('data-filtervaluehidden');
@@ -581,10 +584,12 @@ function wpulivesearch_clear_filter_subvalues() {
 -------------------------- */
 
 function wpulivesearch_extract_active_filters(_results, $filters, $filters_multiples) {
+    'use strict';
     var active_filters = {},
         _filter,
         _filter_key,
         ii,
+        len,
         i,
         tmp_result;
     for (_filter_key in wpulivesearch_filters) {
@@ -786,6 +791,7 @@ function wpulivesearch_set_load_more_content($pager, _current) {
 }
 
 function wpulivesearch_set_pager_content($pager, _current) {
+    'use strict';
     var _tmpHTML = '',
         _nb_pages = parseInt($pager.getAttribute('data-nbpages'), 10),
         _tmpHTMLBefore = '',
@@ -858,6 +864,7 @@ function wpulivesearch_pager_clickevent(e) {
 }
 
 function wpulivesearch_pager_clickevent_target($target) {
+    'use strict';
     if (!$target) {
         $target = document.querySelector('.wpulivesearch-pager--load-more a');
     }
@@ -869,6 +876,7 @@ function wpulivesearch_pager_clickevent_target($target) {
 }
 
 function wpulivesearch_get_current_page() {
+    'use strict';
     var $pages = document.querySelectorAll('[data-livepagenb]');
 
     /* Extract current pager */
@@ -885,6 +893,7 @@ function wpulivesearch_get_current_page() {
 }
 
 function wpulivesearch_set_page(page_nb, $pager) {
+    'use strict';
     if (!$pager) {
         $pager = document.querySelector('.wpulivesearch-pager');
     }
@@ -1028,6 +1037,7 @@ function wpulivesearch_extract_values_from_filters($filters) {
 ---------------------------------------------------------- */
 
 function wpulivesearch_filters_compare($filters, _filtersValues, _item) {
+    'use strict';
     var _refValue,
         _itemValue;
     for (var i = 0, len = _filtersValues.length; i < len; i++) {
@@ -1075,7 +1085,6 @@ function wpulivesearch_filters_search(_filtersValues, _item) {
         filter_values,
         filter_id,
         filter_intersect,
-        filter_value_arr,
         i,
         len;
 
@@ -1165,7 +1174,6 @@ function wpulivesearch_get_filter_html(_key, _value) {
     var is_multiple = (_value.multiple == '1'),
         is_radio = _value.input_type && _value.input_type == 'radio',
         _has_default_checked = true,
-        _tmpValue,
         _extra_attr,
         _selected,
         _item_id,
@@ -1177,6 +1185,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
     }
 
     if (is_multiple || is_radio) {
+        _html += _value.values_html_before;
         _html += '<div class="values">';
     }
 
@@ -1212,6 +1221,7 @@ function wpulivesearch_get_filter_html(_key, _value) {
 
     if (is_multiple || is_radio) {
         _html += '</div>';
+        _html += _value.values_html_after;
     }
 
     /* Return full content */
@@ -1241,6 +1251,7 @@ function wpulivesearch_clean_value(_val) {
 }
 
 function wpulivesearch_decode_html(html) {
+    'use strict';
     var txt, _val;
     txt = document.createElement("textarea");
     txt.innerHTML = html;
@@ -1268,9 +1279,19 @@ function wpulivesearch_async_load(src) {
 ---------------------------------------------------------- */
 
 function wpulivesearch_sort_results(callback_func) {
+    'use strict';
     /* Update sort method */
     wpulivesearch_settings.sort_results_callback = callback_func;
     /* Trigger reload */
+    wpulivesearch_reload_live_search();
+}
+
+/* ----------------------------------------------------------
+  Reload
+---------------------------------------------------------- */
+
+function wpulivesearch_reload_live_search() {
+    'use strict';
     document.getElementById('form_wpulivesearch').dispatchEvent(new Event('reload_live_search'));
 }
 
@@ -1279,5 +1300,6 @@ function wpulivesearch_sort_results(callback_func) {
 ---------------------------------------------------------- */
 
 function wpulivesearch_trigger_datas_ready() {
+    'use strict';
     document.dispatchEvent(new Event('wpulivesearch_datas_ready'));
 }

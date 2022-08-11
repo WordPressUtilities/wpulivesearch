@@ -3,7 +3,7 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.23.7
+Version: 0.24.0
 Author: Darklg
 Author URI: http://darklg.me/
 License: MIT License
@@ -11,7 +11,7 @@ License URI: http://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.23.7';
+    private $plugin_version = '0.24.0';
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -135,7 +135,7 @@ class WPULiveSearch {
         echo '</script>';
         echo '<div class="form-wpulivesearch__wrapper">';
         do_action('wpulivesearch_formwrapper_before_form');
-        echo '<form class="form-wpulivesearch ' . $form_settings['form_classname'] . '" id="form_wpulivesearch" action="#" method="post" onsubmit="return false">';
+        echo '<form class="' . trim(esc_html('form-wpulivesearch ' . $form_settings['form_classname'])) . '" id="form_wpulivesearch" action="#" method="post" onsubmit="return false">';
         do_action('wpulivesearch_form_before_content');
         if (!is_array($this->settings['search_form_order'])) {
             $this->settings['search_form_order'] = array();
@@ -193,6 +193,14 @@ class WPULiveSearch {
 
     public function build_filters($filters) {
         foreach ($filters as &$filter) {
+
+            /* HTML */
+            if (!isset($filter['values_html_before'])) {
+                $filter['values_html_before'] = '';
+            }
+            if (!isset($filter['values_html_after'])) {
+                $filter['values_html_after'] = '';
+            }
 
             /* View all */
             if (!isset($filter['view_all_label'])) {
