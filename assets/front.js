@@ -23,6 +23,11 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 wpulivesearch_datas[i][wpulivesearch_datas_keys[ii]] = _raw_data[ii];
             }
 
+            /* Clean item data */
+            if (typeof wpulivesearch_clean_item_data == 'function') {
+                wpulivesearch_datas[i] = wpulivesearch_clean_item_data(wpulivesearch_datas[i]);
+            }
+
             /* Clean values */
             wpulivesearch_datas[i] = set_fulltext_values(wpulivesearch_datas[i]);
 
@@ -120,6 +125,9 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
     (function() {
         var _i = 0;
         for (var i in wpulivesearch_filters) {
+            if (typeof wpulivesearch_before_filter_insertion == 'function') {
+                wpulivesearch_filters[i] = wpulivesearch_before_filter_insertion(wpulivesearch_filters[i], i, wpulivesearch_datas);
+            }
             $filters[_i].innerHTML = $filters[_i].innerHTML + wpulivesearch_get_filter_html(i, wpulivesearch_filters[i]);
             _i++;
         }
