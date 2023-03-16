@@ -1078,12 +1078,28 @@ function wpulivesearch_filters_compare($filters, _filtersValues, _item) {
 /* Search fulltext */
 function wpulivesearch_fulltext_search(_val, _item) {
     'use strict';
+    _val = wpulivesearch_clean_value(_val).split(' ').filter(function(el) {
+        return el;
+    });
     for (var _key in _item.fulltext) {
-        if (_item.fulltext[_key].indexOf(_val) > -1) {
+        if (wpulivesearch_words_are_all_in_text(_val, _item.fulltext[_key])) {
             return true;
         }
     }
     return false;
+}
+
+function wpulivesearch_words_are_all_in_text(words, text) {
+    var _match = true;
+    for (var i = 0, len = words.length; i < len; i++) {
+        if (!words[i]) {
+            continue;
+        }
+        if (text.indexOf(words[i]) < 0) {
+            _match = false;
+        }
+    }
+    return _match;
 }
 
 /* Search filters */
