@@ -1,4 +1,4 @@
-/* globals wpulivesearch_datas, wpulivesearch_filters, wpulivesearch_datas_keys, wpulivesearch_settings, wpulivesearch_tpl, wpulivesearch_get_filled_template__before_items, wpulivesearch_get_filled_template__after_items, wpulivesearch_get_filled_template__before_item, wpulivesearch_get_filled_template__after_item */
+/* exported wpulivesearch_set_pager_current, wpulivesearch_async_load, wpulivesearch_sort_results */
 
 document.addEventListener('wpulivesearch_datas_ready', function() {
     'use strict';
@@ -177,7 +177,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             return;
         }
         var _hash = window.location.hash;
-        _hash = _hash.replace('\#', '');
+        _hash = _hash.replace('#', '');
         if (!_hash) {
             return;
         }
@@ -279,7 +279,6 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             _filtersValues = [],
             _hasFullText,
             _hasFilters,
-            _hasCompare,
             i,
             len;
 
@@ -320,10 +319,8 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
             }
 
             /* Compare search */
-            _hasCompare = false;
             if (wpulivesearch_filters_compare($filters, _filtersValues, wpulivesearch_datas[i])) {
                 _results[i] = wpulivesearch_datas[i];
-                _hasCompare = true;
             }
             else {
                 delete _results[i];
@@ -1090,6 +1087,7 @@ function wpulivesearch_fulltext_search(_val, _item) {
 }
 
 function wpulivesearch_words_are_all_in_text(words, text) {
+    'use strict';
     var _match = true;
     for (var i = 0, len = words.length; i < len; i++) {
         if (!words[i]) {

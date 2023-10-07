@@ -3,15 +3,22 @@
 Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.26.0
+Update URI: https://github.com/WordPressUtilities/wpulivesearch
+Version: 0.26.1
 Author: Darklg
-Author URI: http://darklg.me/
+Author URI: https://darklg.me/
+Text Domain: wpulivesearch
+Domain Path: /lang
+Requires at least: 6.0
+Requires PHP: 8.0
 License: MIT License
-License URI: http://opensource.org/licenses/MIT
+License URI: https://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.26.0';
+    private $plugin_version = '0.26.1';
+    public $plugin_description;
+    public $settings_update;
     private $settings = array(
         'load_all_default' => false,
         'view_selected_simple_replace_label' => false,
@@ -46,10 +53,14 @@ class WPULiveSearch {
 
     public function plugins_loaded() {
         /* Translation */
-        load_plugin_textdomain('wpulivesearch', false, dirname(plugin_basename(__FILE__)) . '/lang/');
+        $lang_dir = dirname(plugin_basename(__FILE__)) . '/lang/';
+        if (!load_plugin_textdomain('wpulivesearch', false, $lang_dir)) {
+            load_muplugin_textdomain('wpulivesearch', $lang_dir);
+        }
+        $this->plugin_description = __('Live Search datas', 'wpulivesearch');
 
         /* Updater */
-        include dirname(__FILE__) . '/inc/WPUBaseUpdate/WPUBaseUpdate.php';
+        require_once dirname(__FILE__) . '/inc/WPUBaseUpdate/WPUBaseUpdate.php';
         $this->settings_update = new \wpulivesearch\WPUBaseUpdate(
             'WordPressUtilities',
             'wpulivesearch',

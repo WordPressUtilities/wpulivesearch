@@ -1,0 +1,24 @@
+{
+    "undef": true,
+    "unused": true,
+    "browser": true,
+    "jquery": true,
+    "node": true,
+    "curly": true,
+    "strict": true,
+    "maxlen": 400,
+    "globals": {
+        "wpulivesearch_before_filter_insertion":true,
+        "wpulivesearch_clean_item_data":true,
+        "wpulivesearch_datas": true,
+        "wpulivesearch_datas_keys": true,
+        "wpulivesearch_delete_result":true,
+        "wpulivesearch_filters": true,
+        "wpulivesearch_get_filled_template__after_item": true,
+        "wpulivesearch_get_filled_template__after_items": true,
+        "wpulivesearch_get_filled_template__before_item": true,
+        "wpulivesearch_get_filled_template__before_items": true,
+        "wpulivesearch_settings": true,
+        "wpulivesearch_tpl": true
+    }
+}
