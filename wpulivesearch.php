@@ -4,7 +4,7 @@ Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
 Update URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.26.1
+Version: 0.26.2
 Author: Darklg
 Author URI: https://darklg.me/
 Text Domain: wpulivesearch
@@ -16,7 +16,7 @@ License URI: https://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.26.1';
+    private $plugin_version = '0.26.2';
     public $plugin_description;
     public $settings_update;
     private $settings = array(
