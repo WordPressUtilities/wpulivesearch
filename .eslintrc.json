@@ -8,20 +8,25 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-        "no-prototype-builtins": 0
+        "no-prototype-builtins": 0,
+        "no-unused-vars": 1,
+        "no-undef": 1
     },
     "globals": {
-        "wpulivesearch_before_filter_insertion":true,
-        "wpulivesearch_clean_item_data":true,
-        "wpulivesearch_datas": true,
+        "wpulivesearch_options": true,
+        "wpulivesearch_settings": true,
         "wpulivesearch_datas_keys": true,
-        "wpulivesearch_delete_result":true,
+        "wpulivesearch_clean_item_data": true,
+        "wpulivesearch_delete_result": true,
         "wpulivesearch_filters": true,
+        "wpulivesearch_datas": true,
+        "wpulivesearch_before_filter_insertion": true,
+        "wpulivesearch_get_filled_template__before_items": true,
+        "wpulivesearch_get_filled_template__before_item": true,
         "wpulivesearch_get_filled_template__after_item": true,
         "wpulivesearch_get_filled_template__after_items": true,
-        "wpulivesearch_get_filled_template__before_item": true,
-        "wpulivesearch_get_filled_template__before_items": true,
-        "wpulivesearch_settings": true,
-        "wpulivesearch_tpl": true
+        "wpulivesearch_tpl": true,
+        "wp": true,
+        "jQuery": true
     }
 }

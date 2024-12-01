@@ -5,19 +5,20 @@ Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
 Update URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.26.3
+Version: 0.27.0
 Author: Darklg
 Author URI: https://darklg.me/
 Text Domain: wpulivesearch
 Domain Path: /lang
 Requires at least: 6.2
 Requires PHP: 8.0
+Network: Optional
 License: MIT License
 License URI: https://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.26.3';
+    private $plugin_version = '0.27.0';
     public $plugin_description;
     public $settings_update;
     private $settings = array(
@@ -47,18 +48,24 @@ class WPULiveSearch {
 
     public function __construct() {
         add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
+        add_action('init', array(&$this, 'load_translation'));
         add_action('wp', array(&$this, 'wp'));
         add_action('wp_enqueue_scripts', array(&$this, 'wp_enqueue_scripts'));
         add_action('wpulivesearch_form', array(&$this, 'display_form'), 10, 4);
     }
 
-    public function plugins_loaded() {
-        /* Translation */
+    public function load_translation() {
         $lang_dir = dirname(plugin_basename(__FILE__)) . '/lang/';
-        if (!load_plugin_textdomain('wpulivesearch', false, $lang_dir)) {
+        if (strpos(__DIR__, 'mu-plugins') !== false) {
             load_muplugin_textdomain('wpulivesearch', $lang_dir);
+        } else {
+            load_plugin_textdomain('wpulivesearch', false, $lang_dir);
         }
+
         $this->plugin_description = __('Live Search datas', 'wpulivesearch');
+    }
+
+    public function plugins_loaded() {
 
         /* Updater */
         require_once __DIR__ . '/inc/WPUBaseUpdate/WPUBaseUpdate.php';
