@@ -5,7 +5,7 @@ Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
 Update URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.27.0
+Version: 0.28.0
 Author: Darklg
 Author URI: https://darklg.me/
 Text Domain: wpulivesearch
@@ -18,7 +18,7 @@ License URI: https://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.27.0';
+    private $plugin_version = '0.28.0';
     public $plugin_description;
     public $settings_update;
     private $settings = array(
@@ -520,23 +520,13 @@ class WPULiveSearch {
                     }
                 }
             }
-            $html .= 'window.wpulivesearch_tpl.' . $key . '=' . $this->get_html_as_js_content($value) . ';';
+            $html .= 'window.wpulivesearch_tpl.' . $key . '=' . wpulivesearch_get_html_as_js_content($value) . ';';
         }
 
         return '<script>' . $html . '</script>';
     }
-
-    public function get_html_as_js_content($value) {
-        /* Protect HTML quotes */
-        $value = addslashes($value);
-
-        /* Fix for multiline */
-        $value = explode("\n", $value);
-        $value = implode("'+\n'", $value);
-
-        /* Add simple quotes */
-        return "'" . $value . "'";
-    }
 }
 
 $WPULiveSearch = new WPULiveSearch();
+
+require_once __DIR__ . '/inc/helpers.php';
