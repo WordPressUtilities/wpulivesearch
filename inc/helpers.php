@@ -39,6 +39,29 @@ function wpulivesearch_get_query_for_post_type($post_type = 'post', $args = arra
 }
 
 /* ----------------------------------------------------------
+  Filter : post type
+---------------------------------------------------------- */
+
+function wpulivesearch_get_filters_post_type_values($post_type) {
+    $items_values = array();
+    $items = get_posts(array(
+        'post_type' => $post_type,
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'orderby' => 'title',
+        'order' => 'ASC'
+    ));
+    foreach ($items as $item) {
+        $items_values[] = array(
+            'label' => get_the_title($item->ID),
+            'value' => $item->ID
+        );
+    }
+
+    return $items_values;
+}
+
+/* ----------------------------------------------------------
   Get terms for post
 ---------------------------------------------------------- */
 
