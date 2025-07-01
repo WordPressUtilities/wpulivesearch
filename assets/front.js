@@ -129,6 +129,7 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                 wpulivesearch_filters[i] = wpulivesearch_before_filter_insertion(wpulivesearch_filters[i], i, wpulivesearch_datas);
             }
             $filters[_i].innerHTML = $filters[_i].innerHTML + wpulivesearch_get_filter_html(i, wpulivesearch_filters[i]);
+            $filters[_i].closest('.wpulivesearch-filter__wrapper').setAttribute('data-nb-values', wpulivesearch_filters[i].values.length);
             _i++;
         }
     }());
