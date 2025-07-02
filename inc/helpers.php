@@ -101,3 +101,25 @@ function wpulivesearch_get_html_as_js_content($value) {
     /* Add simple quotes */
     return "'" . $value . "'";
 }
+
+/* ----------------------------------------------------------
+  Preload thumbnail cache for posts
+---------------------------------------------------------- */
+
+function wpulivesearch_preload_thumbnail_cache($post_ids) {
+    $thumbnail_ids = [];
+
+    /* Load all thumbnails ids */
+    foreach ($post_ids as $post_id) {
+        $thumbnail_id = get_post_meta($post_id, '_thumbnail_id', true);
+        if ($thumbnail_id) {
+            $thumbnail_ids[] = $thumbnail_id;
+        }
+    }
+
+    /* Preload all metas for thumbnails */
+    if (!empty($thumbnail_ids)) {
+        _prime_post_caches($thumbnail_ids, false, true);
+        update_meta_cache('post', $thumbnail_ids);
+    }
+}
