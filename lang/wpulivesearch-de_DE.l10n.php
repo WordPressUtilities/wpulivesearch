@@ -1,0 +1,2 @@
+<?php
+return ['domain'=>NULL,'plural-forms'=>NULL,'messages'=>['Live Search datas'=>'Live Search datas','View all'=>'Alle anzeigen','Reset'=>'Zurücksetzen','Search'=>'Suche','Filter values'=>'Filtere Attributwerte','Load more'=>'Mehr laden','No results for this query, sorry'=>'Keine Ergebnisse für diese Abfrage, tut mir leid','%s results'=>'%s Ergebnisse','%s result'=>'%s Ergebnis'],'language'=>'de_DE','x-generator'=>'Poedit 3.6'];
