@@ -62,6 +62,33 @@ function wpulivesearch_get_filters_post_type_values($post_type) {
 }
 
 /* ----------------------------------------------------------
+  Filter : array
+---------------------------------------------------------- */
+
+function wpulivesearch_get_filters_from_array($values, $key, $args = array()) {
+    $items_values = array();
+    if (!is_array($values)) {
+        return;
+    }
+
+    foreach ($values as $item) {
+        if (!isset($item[$key]) || empty($item[$key])) {
+            continue;
+        }
+        $item[$key] = sanitize_text_field($item[$key]);
+        if (!isset($items_values['values'][$item[$key]])) {
+            $items_values[$item[$key]] = array(
+                'label' => $item[$key],
+                'value' => $item[$key]
+            );
+        }
+    }
+
+    ksort($items_values);
+    return $items_values;
+}
+
+/* ----------------------------------------------------------
   Get terms for post
 ---------------------------------------------------------- */
 
