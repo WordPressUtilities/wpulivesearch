@@ -52,8 +52,12 @@ function wpulivesearch_get_filters_post_type_values($post_type) {
         'order' => 'ASC'
     ));
     foreach ($items as $item) {
+        $title = get_the_title($item->ID);
+        if (!$title) {
+            $title = '#' . $item->ID;
+        }
         $items_values[] = array(
-            'label' => get_the_title($item->ID),
+            'label' => $title,
             'value' => $item->ID
         );
     }
