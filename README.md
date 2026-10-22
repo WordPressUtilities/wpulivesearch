@@ -27,7 +27,9 @@ $filters = array(
     ),
     /* Taxonomy : Exact match will be required */
     'category' => array(
-        'taxonomy' => 'category'
+        'taxonomy' => 'category',
+        'hide_empty' => true, // terms without posts are hidden
+        'hide_if_no_values' => true // category is empty : hide this filter
     ),
     /* Taxonomy : Same as previous, but with radio buttons */
     'category' => array(

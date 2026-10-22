@@ -5,12 +5,12 @@ Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
 Update URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.29.1
+Version: 0.29.2
 Author: Darklg
 Author URI: https://darklg.me/
 Text Domain: wpulivesearch
 Domain Path: /lang
-Requires at least: 6.2
+Requires at least: 6.9
 Requires PHP: 8.0
 Network: Optional
 License: MIT License
@@ -18,7 +18,7 @@ License URI: https://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.29.1';
+    private $plugin_version = '0.29.2';
     public $plugin_description;
     public $settings_update;
     private $settings = array(
@@ -299,8 +299,12 @@ class WPULiveSearch {
             uasort($filter['values'], $callback_uasort);
             unset($filter['sortby']);
         }
+        unset($filter);
 
-        return $filters;
+        /* Hide filters without values */
+        return array_filter($filters, function ($filter) {
+            return empty($filter['hide_if_no_values']) || !empty($filter['values']);
+        });
     }
 
     public function sort_alpha_label($a, $b) {
