@@ -215,6 +215,10 @@ document.addEventListener('wpulivesearch_datas_ready', function() {
                         $filter.options[y].selected = _values.indexOf(encodeURIComponent($filter.options[y].value)) >= 0;
                     }
                 }
+                /* Set value for simple selects */
+                if ($filter && $filter.tagName == 'SELECT' && !$filter.multiple) {
+                    $filter.value = decodeURIComponent(_values[0]);
+                }
             }());
         }
         _pause_livesearch = false;
