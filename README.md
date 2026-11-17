@@ -29,6 +29,7 @@ $filters = array(
     'category' => array(
         'taxonomy' => 'category',
         'hide_empty' => true, // terms without posts are hidden
+        'hide_values_not_in_datas' => true, // values not used in datas are hidden
         'hide_if_no_values' => true // category is empty : hide this filter
     ),
     /* Taxonomy : Same as previous, but with radio buttons */

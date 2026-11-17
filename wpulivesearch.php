@@ -5,7 +5,7 @@ Plugin Name: WPU Live Search
 Description: Live Search datas
 Plugin URI: https://github.com/WordPressUtilities/wpulivesearch
 Update URI: https://github.com/WordPressUtilities/wpulivesearch
-Version: 0.29.3
+Version: 0.30.0
 Author: Darklg
 Author URI: https://darklg.me/
 Text Domain: wpulivesearch
@@ -18,7 +18,7 @@ License URI: https://opensource.org/licenses/MIT
 */
 
 class WPULiveSearch {
-    private $plugin_version = '0.29.3';
+    private $plugin_version = '0.30.0';
     public $plugin_description;
     public $settings_update;
     private $settings = array(
@@ -124,7 +124,7 @@ class WPULiveSearch {
         if (!isset($form_settings['form_classname'])) {
             $form_settings['form_classname'] = '';
         }
-        $filters = $this->build_filters($filters);
+        $filters = $this->build_filters($filters, $datas);
         $new_datas = $this->control_datas($datas);
 
         $wpulivesearch_datas = json_encode($new_datas['values']);
@@ -219,7 +219,7 @@ class WPULiveSearch {
         );
     }
 
-    public function build_filters($filters) {
+    public function build_filters($filters, $datas = array()) {
         foreach ($filters as &$filter) {
 
             /* HTML */
@@ -280,6 +280,31 @@ class WPULiveSearch {
 
             unset($filter['type']);
             unset($filter['taxonomy']);
+        }
+
+        /* Keep only values used in datas */
+        foreach ($filters as $key => &$filter) {
+            if (empty($filter['hide_values_not_in_datas'])) {
+                continue;
+            }
+            unset($filter['hide_values_not_in_datas']);
+            if (empty($filter['values']) || !is_array($filter['values'])) {
+                continue;
+            }
+            $used_values = array();
+            foreach ($datas as $data) {
+                if (!is_array($data)) {
+                    $data = get_object_vars($data);
+                }
+                if (isset($data[$key])) {
+                    foreach ((array) $data[$key] as $data_value) {
+                        $used_values[(string) $data_value] = true;
+                    }
+                }
+            }
+            $filter['values'] = array_values(array_filter($filter['values'], function ($value) use ($used_values) {
+                return isset($used_values[(string) $value['value']]);
+            }));
         }
 
         foreach ($filters as &$filter) {
